@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mastercard.mcob</groupId>
+    <artifactId>liquibase-cosmosdb-example</artifactId>
+    <packaging>jar</packaging>
+    <version>4.0.1-SNAPSHOT</version>
+
+    <name>Liquibase Cosmos DB Core (SQL) API Extension Demo Application</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-maven-plugin</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mastercard.mcob</groupId>
+            <artifactId>liquibase-cosmosdb</artifactId>
+            <version>4.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.0.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mastercard.mcob</groupId>
+                <artifactId>liquibase-cosmosdb</artifactId>
+                <version>4.0.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>4.0.0</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.0.0</version>
+                <configuration>
+                    <changeLogFile>C:\MCOB\projects\liquibase-cosmosdb\liquibase-cosmosdb-example\src\main\resources\scripts\changelog.main.xml</changeLogFile>
+                    <url>cosmosdb://{"AccountEndpoint" : "https://ech-0a9d975b:8080", "AccountKey" : "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", "DatabaseName" : "testdb1"}</url>
+                    <!-- TODO: required to be false as if true database.getConnection() throws NPE-->
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mastercard.mcob</groupId>
+                        <artifactId>liquibase-cosmosdb</artifactId>
+                        <version>4.0.1-SNAPSHOT</version>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-core</artifactId>
+                        <version>4.0.0</version>
+                    </dependency>
+
+                </dependencies>
+                <!--executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions-->
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

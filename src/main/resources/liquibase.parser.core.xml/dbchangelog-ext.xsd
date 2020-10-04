@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+            xmlns="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+            elementFormDefault="qualified">
+
+    <xsd:element name="createContainer">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="options" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+            <xsd:attribute name="skipExisting" type="xsd:boolean" use="optional" default="false"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:element name="replaceContainer">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="options" type="xsd:string" minOccurs="0"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:element name="deleteContainer">
+
+        <xsd:complexType>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+            <xsd:attribute name="skipMissing" type="xsd:boolean" use="optional" default="false"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:element name="createItem">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="document" type="xsd:string"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:element name="upsertItem">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="document" type="xsd:string"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:element name="updateEachItem">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="query" type="xsd:string"/>
+                <xsd:element name="document" type="xsd:string"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+</xsd:schema>

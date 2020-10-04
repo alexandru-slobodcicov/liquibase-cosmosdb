@@ -1,0 +1,6 @@
+liquibase.ext.cosmosdb.change.CreateContainerChange
+liquibase.ext.cosmosdb.change.DeleteContainerChange
+liquibase.ext.cosmosdb.change.ReplaceContainerChange
+liquibase.ext.cosmosdb.change.CreateItemChange
+liquibase.ext.cosmosdb.change.UpsertItemChange
+liquibase.ext.cosmosdb.change.UpdateEachItemChange
