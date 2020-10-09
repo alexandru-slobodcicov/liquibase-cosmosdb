@@ -119,12 +119,10 @@ class ChangeSetRepositoryIT extends AbstractCosmosWithConnectionIntegrationTest 
         assertThat(actual2.getExecType()).isEqualTo(ChangeSet.ExecType.EXECUTED);
         assertThat(actual2.getDescription()).isEqualTo("Description");
         assertThat(actual2.getComments()).isEqualTo("Comments");
-        //TODO: Investigate if required back from DB
-        assertThat(actual2.getContextExpression()).isNull();
+        assertThat(actual2.getContextExpression().getContexts()).hasSize(3);
         // Cannot get from DB as it is pass through from ChangeSet
         assertThat(actual2.getInheritableContexts()).isNull();
-        //TODO: Investigate if required back from DB
-        assertThat(actual2.getLabels()).isNull();
+        assertThat(actual2.getLabels().getLabels()).containsAll(labels1.getLabels());
         assertThat(actual2.getDeploymentId()).isEqualTo("DeploymentId");
         assertThat(actual2.getOrderExecuted()).isEqualTo(1);
         assertThat(actual2.getLiquibase()).isEqualTo("BuildVersion");

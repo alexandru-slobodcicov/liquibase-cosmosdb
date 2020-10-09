@@ -2,6 +2,7 @@ package liquibase.ext.cosmosdb.persistence;
 
 import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.models.*;
+import liquibase.ext.cosmosdb.statement.JsonUtils;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,13 +10,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static liquibase.ext.cosmosdb.persistence.AbstractItemToDocumentConverter.COSMOS_ID_FIELD;
+import static liquibase.ext.cosmosdb.statement.JsonUtils.COSMOS_ID_FIELD;
+import static liquibase.ext.cosmosdb.statement.JsonUtils.DEFAULT_PARTITION_KEY_PERSIST;
 
 
 public abstract class AbstractRepository<T> {
-
-    public static final PartitionKey DEFAULT_PARTITION_KEY = new PartitionKey(AbstractItemToDocumentConverter.DEFAULT_PARTITION_KEY_VALUE);
-    public static final String COSMOS_ID_PARAMETER = "@" + COSMOS_ID_FIELD;
 
     @Getter
     private final CosmosContainer container;
@@ -30,12 +29,9 @@ public abstract class AbstractRepository<T> {
 
     public Optional<T> get(final String id) {
 
-        final SqlQuerySpec querySpec = new SqlQuerySpec();
-        querySpec.setQueryText(String.format("SELECT * FROM c WHERE c.id=\"%s\"", id));
-        final CosmosQueryRequestOptions queryRequestOptions = new CosmosQueryRequestOptions();
-        queryRequestOptions.setPartitionKey(DEFAULT_PARTITION_KEY);
-
-        return container.queryItems(querySpec, queryRequestOptions, Map.class).stream().findFirst().map(converter::fromDocument);
+        final SqlQuerySpec querySpec
+                = new SqlQuerySpec("SELECT * FROM c WHERE c.id=" + JsonUtils.COSMOS_ID_PARAMETER, new SqlParameter(JsonUtils.COSMOS_ID_PARAMETER, id));
+        return container.queryItems(querySpec, null, Map.class).stream().findFirst().map(converter::fromDocument);
     }
 
     public List<T> getAll() {
@@ -44,12 +40,13 @@ public abstract class AbstractRepository<T> {
 
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> readAllItems() {
-        return container.readAllItems(DEFAULT_PARTITION_KEY, Map.class).stream()
+
+        return container.queryItems("SELECT * FROM c", null, Map.class).stream()
                 .map(i -> (Map<String, Object>)i).collect(Collectors.toList());
     }
 
     public int create(final Map<String, Object> document) {
-        container.createItem(document, DEFAULT_PARTITION_KEY, null);
+        container.createItem(document, DEFAULT_PARTITION_KEY_PERSIST, null);
         return 1;
     }
 
@@ -60,7 +57,7 @@ public abstract class AbstractRepository<T> {
 
 
     public int replace(final Map<String, Object> document) {
-        container.replaceItem(document, (String)document.get(COSMOS_ID_FIELD), DEFAULT_PARTITION_KEY,  null);
+        container.replaceItem(document, (String)document.get(COSMOS_ID_FIELD), DEFAULT_PARTITION_KEY_PERSIST,  null);
         return 1;
     }
 
@@ -70,7 +67,7 @@ public abstract class AbstractRepository<T> {
     }
 
     public int upsert(Map<String, Object> document) {
-        container.upsertItem(document, DEFAULT_PARTITION_KEY, null);
+        container.upsertItem(document, null);
         return 1;
     }
 
@@ -80,7 +77,7 @@ public abstract class AbstractRepository<T> {
     }
 
     public int delete(final Map<String, Object> document) {
-        container.deleteItem((String)document.get(COSMOS_ID_FIELD), DEFAULT_PARTITION_KEY,  null);
+        container.deleteItem((String)document.get(COSMOS_ID_FIELD), JsonUtils.DEFAULT_PARTITION_KEY,  null);
         return 1;
     }
 
@@ -91,16 +88,8 @@ public abstract class AbstractRepository<T> {
 
     public boolean exists(final String id) {
         final SqlQuerySpec querySpec
-                = new SqlQuerySpec("SELECT * FROM c WHERE c.id=" + COSMOS_ID_PARAMETER, new SqlParameter(COSMOS_ID_PARAMETER, id));
-        final CosmosQueryRequestOptions queryRequestOptions = new CosmosQueryRequestOptions();
-        queryRequestOptions.setPartitionKey(DEFAULT_PARTITION_KEY);
+                = new SqlQuerySpec("SELECT * FROM c WHERE c.id=" + JsonUtils.COSMOS_ID_PARAMETER, new SqlParameter(JsonUtils.COSMOS_ID_PARAMETER, id));
 
-        return 1L == container.queryItems(querySpec, queryRequestOptions, Map.class).stream().count();
+        return 1L == container.queryItems(querySpec, null, Map.class).stream().count();
     }
-
-    public Integer count() {
-        long count = container.readAllItems(DEFAULT_PARTITION_KEY, Map.class).stream().count();
-        return (int) count;
-    }
-
 }

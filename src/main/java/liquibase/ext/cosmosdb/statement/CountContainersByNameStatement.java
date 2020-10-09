@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -28,7 +28,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class CountContainersByNameStatement extends AbstractNoSqlStatement implements NoSqlQueryForLongStatement{
+public class CountContainersByNameStatement extends AbstractNoSqlStatement implements NoSqlQueryForLongStatement {
 
     public static final String COMMAND_NAME = "countContainersByName";
 

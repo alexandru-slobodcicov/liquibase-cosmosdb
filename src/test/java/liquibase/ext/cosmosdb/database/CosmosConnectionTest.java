@@ -18,6 +18,10 @@ import static org.mockito.Mockito.when;
 class CosmosConnectionTest {
 
     public static final String TEST_COSMOS_JSON_CONNECTION_STRING_1 = "cosmosdb://{\"AccountEndpoint\" : \"https://ech-0a9d975b:8080\", \"AccountKey\" : \"C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==\", \"DatabaseName\" : \"testdb1\"}";
+
+    public static final String TEST_COSMOS_URL_CONNECTION_STRING_1 = "cosmosdb://ech-0a9d975b:C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==:8080/testdb1?ssl=false";
+
+
     @Mock
     private CosmosClientDriver driverMock;
 
@@ -61,6 +65,4 @@ class CosmosConnectionTest {
         assertThat(connection.getCosmosClient()).isNull();
         assertThat(connection.isClosed()).isTrue();
     }
-
-
 }

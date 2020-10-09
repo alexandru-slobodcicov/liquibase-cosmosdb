@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.executor;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%

@@ -2,9 +2,9 @@ package liquibase.ext.cosmosdb;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
- * Copyright (C) 2019 Mastercard
+ * Copyright (C) 2020 Mastercard
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ public abstract class AbstractCosmosIntegrationTest {
 
     public static final String CONTAINER_NAME_PERSON = "person";
     public static final String PARTITION_KEY_PATH_LAST_NAME = "{ \"partitionKey\": {\"paths\": [\"/lastName\"], \"kind\": \"Hash\" } }";
+    public static final String DEFAULT_PARTITION_KEY_VALUE = "default";
+
     protected Properties testProperties;
     protected String connectionString;
     protected CosmosClientDriver driver;

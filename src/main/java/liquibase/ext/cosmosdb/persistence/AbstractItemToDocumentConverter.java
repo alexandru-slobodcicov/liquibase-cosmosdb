@@ -12,8 +12,6 @@ public abstract class AbstractItemToDocumentConverter<A, B> {
 
     public static final String ISO_8601_UTC_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(ISO_8601_UTC_DATETIME_FORMAT);
-    public static final String DEFAULT_PARTITION_KEY_VALUE = "default";
-    public static final String COSMOS_ID_FIELD = "id";
 
     public abstract B toDocument(A item);
 

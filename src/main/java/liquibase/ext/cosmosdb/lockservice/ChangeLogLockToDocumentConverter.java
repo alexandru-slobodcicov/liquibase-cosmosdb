@@ -1,7 +1,7 @@
 package liquibase.ext.cosmosdb.lockservice;
 
 import liquibase.ext.cosmosdb.persistence.AbstractItemToDocumentConverter;
-import liquibase.ext.cosmosdb.statement.CreateContainerStatement;
+import liquibase.ext.cosmosdb.statement.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -23,11 +23,10 @@ public class ChangeLogLockToDocumentConverter extends AbstractItemToDocumentConv
 //        document.set(CosmosChangeLogLock.Fields.partition, item.getPartition());
 
         final Map<String, Object> document = new HashMap<>();
-        document.put(COSMOS_ID_FIELD, Integer.toString(item.getId()));
+        document.put(JsonUtils.COSMOS_ID_FIELD, Integer.toString(item.getId()));
         document.put(CosmosChangeLogLock.Fields.lockGranted, fromDate(item.getLockGranted()));
         document.put(CosmosChangeLogLock.Fields.lockedBy, item.getLockedBy());
         document.put(CosmosChangeLogLock.Fields.locked, item.getLocked());
-        document.put(CreateContainerStatement.DEFAULT_PARTITION_KEY_NAME, item.getPartition());
 
         return document;
     }
@@ -35,11 +34,10 @@ public class ChangeLogLockToDocumentConverter extends AbstractItemToDocumentConv
     @Override
     public CosmosChangeLogLock fromDocument(final Map<String, Object> document) {
         return CosmosChangeLogLock.builder()
-                .id(ofNullable(document.get(COSMOS_ID_FIELD)).map(s -> Integer.parseInt((String) s)).orElse(-1))
+                .id(ofNullable(document.get(JsonUtils.COSMOS_ID_FIELD)).map(s -> Integer.parseInt((String) s)).orElse(-1))
                 .lockGranted(ofNullable(document.get(CosmosChangeLogLock.Fields.lockGranted)).map(s -> toDate((String) s)).orElse(null))
                 .lockedBy(ofNullable((String) document.get(CosmosChangeLogLock.Fields.lockedBy)).orElse(StringUtils.EMPTY))
                 .locked((Boolean) ofNullable(document.get(CosmosChangeLogLock.Fields.locked)).orElse(null))
-                .partition((String) ofNullable(document.get(CreateContainerStatement.DEFAULT_PARTITION_KEY_NAME)).orElse(StringUtils.EMPTY))
                 .build();
     }
 }

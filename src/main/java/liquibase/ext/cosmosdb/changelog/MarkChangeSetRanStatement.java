@@ -6,7 +6,7 @@ import liquibase.change.core.TagDatabaseChange;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.RanChangeSet;
 import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.ext.cosmosdb.statement.AbstractNoSqlRepositoryStatement;
+import liquibase.ext.cosmosdb.statement.AbstractNoSqlContainerStatement;
 import liquibase.ext.cosmosdb.statement.NoSqlExecuteStatement;
 import liquibase.util.LiquibaseUtil;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 import java.util.UUID;
 
-public class MarkChangeSetRanStatement extends AbstractNoSqlRepositoryStatement implements NoSqlExecuteStatement {
+public class MarkChangeSetRanStatement extends AbstractNoSqlContainerStatement implements NoSqlExecuteStatement {
 
     public static final String COMMAND_NAME = "markChangeSet";
 

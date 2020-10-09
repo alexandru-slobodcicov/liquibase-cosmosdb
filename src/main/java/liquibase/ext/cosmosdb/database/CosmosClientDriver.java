@@ -23,18 +23,18 @@ public class CosmosClientDriver implements Driver {
         throw new UnsupportedOperationException("Cannot initiate a SQL Connection for a NoSql DB");
     }
 
-    public CosmosClientProxy connect(final CosmosJsonConnectionString cosmosJsonConnectionString) throws DatabaseException {
+    public CosmosClientProxy connect(final CosmosConnectionString cosmosConnectionString) throws DatabaseException {
         final CosmosClient client;
         try {
             client = new CosmosClientBuilder()
-                    .endpoint(cosmosJsonConnectionString.getAccountEndpoint().orElse(EMPTY))
-                    .key(cosmosJsonConnectionString.getAccountKey().orElse(EMPTY))
+                    .endpoint(cosmosConnectionString.getAccountEndpoint().orElse(EMPTY))
+                    .key(cosmosConnectionString.getAccountKey().orElse(EMPTY))
                     .consistencyLevel(ConsistencyLevel.EVENTUAL)
                     .userAgentSuffix(LIQUIBASE_EXTENSION_USER_AGENT_SUFFIX)
                     .buildClient();
         } catch (final Exception e) {
             throw new DatabaseException("Connection could not be established to: "
-                    + cosmosJsonConnectionString.getConnectionString(), e);
+                    + cosmosConnectionString.getConnectionString(), e);
         }
         return CosmosClientProxy.builder().cosmosClient(client).build();
     }

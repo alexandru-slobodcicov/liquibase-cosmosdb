@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.lockservice;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -22,7 +22,7 @@ package liquibase.ext.cosmosdb.lockservice;
 
 import com.azure.cosmos.CosmosDatabase;
 import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.ext.cosmosdb.statement.AbstractNoSqlRepositoryStatement;
+import liquibase.ext.cosmosdb.statement.AbstractNoSqlContainerStatement;
 import liquibase.ext.cosmosdb.statement.NoSqlUpdateStatement;
 import liquibase.util.NetUtil;
 import lombok.Getter;
@@ -34,7 +34,7 @@ import java.util.Optional;
 
 @Getter
 @Setter
-public class ReplaceLockChangeLogStatement extends AbstractNoSqlRepositoryStatement implements NoSqlUpdateStatement {
+public class ReplaceLockChangeLogStatement extends AbstractNoSqlContainerStatement implements NoSqlUpdateStatement {
 
     public static final String COMMAND_NAME = "replaceLock";
 
