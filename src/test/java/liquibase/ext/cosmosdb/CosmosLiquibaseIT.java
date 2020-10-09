@@ -24,7 +24,10 @@ import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.models.CosmosContainerProperties;
 import com.azure.cosmos.models.CosmosStoredProcedureProperties;
 import liquibase.Liquibase;
+import liquibase.exception.LiquibaseException;
+import liquibase.executor.ExecutorService;
 import liquibase.ext.cosmosdb.changelog.CosmosRanChangeSet;
+import liquibase.ext.cosmosdb.command.HistoryCommand;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -36,7 +39,7 @@ import java.util.stream.Collectors;
 
 import static liquibase.ext.cosmosdb.statement.JsonUtils.QUERY_SELECT_ALL;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
 
@@ -174,6 +177,7 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .filter(c -> c.getId().equals(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName())).findFirst())
                 .isPresent();
 
+        resetExecutor();
         liquibase.update(EMPTY);
 
         assertThat(cosmosDatabase.readAllContainers().stream()
@@ -195,6 +199,11 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
         assertThat(cosmosDatabase.readAllContainers().stream().count()).isEqualTo(4);
 
 
+    }
+
+    public void resetExecutor() {
+        ExecutorService.getInstance().reset();
+        ExecutorService.getInstance().setExecutor(cosmosLiquibaseDatabase, cosmosExecutor);
     }
 
     @SneakyThrows
@@ -330,6 +339,20 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
         Liquibase liquibase = new Liquibase("liquibase/ext/changelog.generic.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
         liquibase.dropAll();
         assertThat(cosmosDatabase.readAllContainers().stream().count()).isEqualTo(0);
+
+    }
+
+    @SneakyThrows
+    @Test
+    void testHistoryCommand() {
+        Liquibase liquibase = new Liquibase("liquibase/ext/changelog.generic.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
+        liquibase.update("");
+
+        resetExecutor();
+
+        final HistoryCommand historyCommand = new HistoryCommand();
+        historyCommand.setDatabase(cosmosLiquibaseDatabase);
+        assertThatCode(historyCommand::execute).doesNotThrowAnyException();
 
     }
 

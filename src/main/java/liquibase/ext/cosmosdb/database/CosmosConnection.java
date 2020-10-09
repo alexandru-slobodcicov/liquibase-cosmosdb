@@ -52,11 +52,6 @@ public class CosmosConnection implements DatabaseConnection {
     private CosmosDatabase cosmosDatabase;
 
     @Override
-    public int getPriority() {
-        return PRIORITY_DEFAULT + 500;
-    }
-
-    @Override
     public boolean getAutoCommit() throws DatabaseException {
         //TODO: implement if applicable
         return false;
@@ -135,7 +130,6 @@ public class CosmosConnection implements DatabaseConnection {
      * @param driverProperties driverProperties passed through
      * @see CosmosConnectionString
      */
-    @Override
     public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
 
         this.cosmosConnectionString = fromConnectionString(url);

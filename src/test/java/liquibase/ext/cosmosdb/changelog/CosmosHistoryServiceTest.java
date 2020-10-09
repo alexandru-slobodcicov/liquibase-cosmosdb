@@ -20,8 +20,6 @@ package liquibase.ext.cosmosdb.changelog;
  * #L%
  */
 
-import liquibase.Liquibase;
-import liquibase.Scope;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.database.core.H2Database;
 import liquibase.executor.ExecutorService;
@@ -51,7 +49,9 @@ class CosmosHistoryServiceTest {
         cosmosLiquibaseDatabase = new CosmosLiquibaseDatabase();
         cosmosLiquibaseDatabase.setConnection(cosmosConnection);
         cosmosHistoryService = (CosmosHistoryService) ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(cosmosLiquibaseDatabase);
-        cosmosExecutor = (CosmosExecutor) Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor(CosmosExecutor.COSMOS_EXECUTOR_NAME, cosmosLiquibaseDatabase);
+        cosmosExecutor = new CosmosExecutor();
+        cosmosExecutor.setDatabase(cosmosLiquibaseDatabase);
+        ExecutorService.getInstance().setExecutor(cosmosLiquibaseDatabase, cosmosExecutor);
         cosmosHistoryService.reset();
         cosmosHistoryService.resetDeploymentId();
     }

@@ -21,7 +21,6 @@ package liquibase.ext.cosmosdb.changelog;
  */
 
 import liquibase.Liquibase;
-import liquibase.Scope;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.changelog.RanChangeSet;
 import liquibase.database.core.H2Database;
@@ -45,14 +44,12 @@ class CosmosHistoryServiceIT extends AbstractCosmosWithConnectionIntegrationTest
 
     public CosmosHistoryService cosmosHistoryService;
     private CountContainersByNameStatement countContainersByNameStatement;
-    protected CosmosExecutor cosmosExecutor;
 
 
     @BeforeEach
     protected void setUpEach() {
         super.setUpEach();
         cosmosHistoryService = (CosmosHistoryService) ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(cosmosLiquibaseDatabase);
-        cosmosExecutor = (CosmosExecutor) Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor(CosmosExecutor.COSMOS_EXECUTOR_NAME, cosmosLiquibaseDatabase);
         cosmosHistoryService.reset();
         cosmosHistoryService.resetDeploymentId();
         countContainersByNameStatement = new CountContainersByNameStatement(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName());

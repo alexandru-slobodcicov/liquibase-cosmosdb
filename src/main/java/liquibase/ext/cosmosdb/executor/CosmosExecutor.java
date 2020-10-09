@@ -21,31 +21,29 @@ package liquibase.ext.cosmosdb.executor;
  */
 
 import com.azure.cosmos.CosmosDatabase;
-import liquibase.Scope;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.executor.AbstractExecutor;
 import liquibase.ext.cosmosdb.database.CosmosConnection;
 import liquibase.ext.cosmosdb.statement.*;
+import liquibase.logging.LogService;
 import liquibase.logging.Logger;
 import liquibase.servicelocator.LiquibaseService;
 import liquibase.sql.visitor.SqlVisitor;
 import liquibase.statement.SqlStatement;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static liquibase.servicelocator.PrioritizedService.PRIORITY_DATABASE;
 
 @LiquibaseService
 public class CosmosExecutor extends AbstractExecutor {
 
     public static final String COSMOS_EXECUTOR_NAME = "jdbc";
-    private final Logger log = Scope.getCurrentScope().getLog(getClass());
+    private final Logger log = LogService.getLog(getClass());
 
     public CosmosExecutor() {
         super();
@@ -59,16 +57,6 @@ public class CosmosExecutor extends AbstractExecutor {
     public void setDatabase(Database database) {
         super.setDatabase(database);
         cosmosDatabase = ((CosmosConnection) this.database.getConnection()).getCosmosDatabase();
-    }
-
-    @Override
-    public String getName() {
-        return COSMOS_EXECUTOR_NAME;
-    }
-
-    @Override
-    public int getPriority() {
-        return PRIORITY_DATABASE;
     }
 
     @Override

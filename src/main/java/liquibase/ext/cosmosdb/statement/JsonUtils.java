@@ -33,8 +33,8 @@ import java.util.Map;
 
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
-import static liquibase.util.StringUtil.trimToNull;
 import static lombok.AccessLevel.PRIVATE;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class JsonUtils {

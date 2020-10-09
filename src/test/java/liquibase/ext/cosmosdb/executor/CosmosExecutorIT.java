@@ -20,20 +20,15 @@ package liquibase.ext.cosmosdb.executor;
  * #L%
  */
 
-import liquibase.Scope;
-import liquibase.executor.ExecutorService;
 import liquibase.ext.cosmosdb.AbstractCosmosWithConnectionIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class CosmosExecutorIT extends AbstractCosmosWithConnectionIntegrationTest {
 
-    protected CosmosExecutor cosmosExecutor;
-
     @BeforeEach
     protected void setUpEach() {
         super.setUpEach();
-        cosmosExecutor = (CosmosExecutor) Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor(CosmosExecutor.COSMOS_EXECUTOR_NAME, cosmosLiquibaseDatabase);
     }
 
     @Test

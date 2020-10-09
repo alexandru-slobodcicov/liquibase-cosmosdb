@@ -20,8 +20,6 @@ package liquibase.ext.cosmosdb.changelog;
  * #L%
  */
 
-import com.azure.cosmos.CosmosDatabase;
-import liquibase.Scope;
 import liquibase.changelog.AbstractChangeLogHistoryService;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.RanChangeSet;
@@ -36,6 +34,7 @@ import liquibase.ext.cosmosdb.executor.CosmosExecutor;
 import liquibase.ext.cosmosdb.statement.AbstractNoSqlStatement;
 import liquibase.ext.cosmosdb.statement.CountContainersByNameStatement;
 import liquibase.ext.cosmosdb.statement.DeleteContainerStatement;
+import liquibase.logging.LogService;
 import liquibase.logging.Logger;
 import lombok.Getter;
 
@@ -47,7 +46,7 @@ import static java.util.Objects.isNull;
 
 public class CosmosHistoryService extends AbstractChangeLogHistoryService {
 
-    private final Logger log = Scope.getCurrentScope().getLog(getClass());
+    private final Logger log = LogService.getLog(getClass());
 
     @Getter
     private List<RanChangeSet> ranChangeSetList;
@@ -93,7 +92,7 @@ public class CosmosHistoryService extends AbstractChangeLogHistoryService {
     }
 
     public CosmosExecutor getExecutor() {
-        return (CosmosExecutor) Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor(CosmosExecutor.COSMOS_EXECUTOR_NAME, getDatabase());
+        return (CosmosExecutor) ExecutorService.getInstance().getExecutor(getDatabase());
     }
 
     @Override

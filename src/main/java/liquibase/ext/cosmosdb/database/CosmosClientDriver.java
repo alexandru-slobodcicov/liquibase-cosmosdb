@@ -3,8 +3,8 @@ package liquibase.ext.cosmosdb.database;
 import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
-import liquibase.Scope;
 import liquibase.exception.DatabaseException;
+import liquibase.logging.LogService;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -66,6 +66,6 @@ public class CosmosClientDriver implements Driver {
 
     @Override
     public Logger getParentLogger() {
-        return (Logger) Scope.getCurrentScope().getLog(getClass());
+        return (Logger) LogService.getLog(getClass());
     }
 }

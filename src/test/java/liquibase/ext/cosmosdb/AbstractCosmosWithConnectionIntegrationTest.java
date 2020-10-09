@@ -24,11 +24,11 @@ package liquibase.ext.cosmosdb;
 import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.CosmosDatabase;
 import com.azure.cosmos.models.CosmosContainerProperties;
-import liquibase.Scope;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.executor.ExecutorService;
 import liquibase.ext.cosmosdb.database.CosmosConnection;
 import liquibase.ext.cosmosdb.database.CosmosLiquibaseDatabase;
+import liquibase.ext.cosmosdb.executor.CosmosExecutor;
 import liquibase.lockservice.LockServiceFactory;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -43,7 +43,7 @@ public abstract class AbstractCosmosWithConnectionIntegrationTest extends Abstra
     protected CosmosLiquibaseDatabase cosmosLiquibaseDatabase;
     protected CosmosConnection cosmosConnection;
     protected CosmosDatabase cosmosDatabase;
-
+    protected CosmosExecutor cosmosExecutor;
 
     @BeforeAll
     protected void setUp() {
@@ -60,6 +60,9 @@ public abstract class AbstractCosmosWithConnectionIntegrationTest extends Abstra
         cosmosLiquibaseDatabase = new CosmosLiquibaseDatabase();
         cosmosLiquibaseDatabase.setConnection(cosmosConnection);
         cosmosDatabase = cosmosConnection.getCosmosDatabase();
+        cosmosExecutor = new CosmosExecutor();
+        cosmosExecutor.setDatabase(cosmosLiquibaseDatabase);
+        ExecutorService.getInstance().setExecutor(cosmosLiquibaseDatabase, cosmosExecutor);
         deleteContainers();
     }
 
@@ -79,7 +82,7 @@ public abstract class AbstractCosmosWithConnectionIntegrationTest extends Abstra
     protected void resetServices() {
         LockServiceFactory.getInstance().resetAll();
         ChangeLogHistoryServiceFactory.getInstance().resetAll();
-        Scope.getCurrentScope().getSingleton(ExecutorService.class).reset();
+        ExecutorService.getInstance().reset();
     }
 
 }

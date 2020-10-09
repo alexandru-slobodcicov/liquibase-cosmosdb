@@ -20,7 +20,6 @@ package liquibase.ext.cosmosdb.lockservice;
  * #L%
  */
 
-import liquibase.Scope;
 import liquibase.configuration.GlobalConfiguration;
 import liquibase.configuration.LiquibaseConfiguration;
 import liquibase.database.Database;
@@ -35,6 +34,7 @@ import liquibase.ext.cosmosdb.statement.CountContainersByNameStatement;
 import liquibase.ext.cosmosdb.statement.DeleteContainerStatement;
 import liquibase.lockservice.DatabaseChangeLogLock;
 import liquibase.lockservice.LockService;
+import liquibase.logging.LogService;
 import liquibase.logging.Logger;
 import lombok.Getter;
 
@@ -47,7 +47,7 @@ import static java.util.Objects.isNull;
 
 public class CosmosLockService implements LockService {
 
-    private final Logger log = Scope.getCurrentScope().getLog(getClass());
+    private final Logger log = LogService.getLog(getClass());
 
     @Getter
     private CosmosLiquibaseDatabase database;
@@ -78,7 +78,7 @@ public class CosmosLockService implements LockService {
     }
 
     public CosmosExecutor getExecutor() {
-        return (CosmosExecutor) Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor(CosmosExecutor.COSMOS_EXECUTOR_NAME, getDatabase());
+        return (CosmosExecutor) ExecutorService.getInstance().getExecutor(getDatabase());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CosmosLockService implements LockService {
 
             executor.execute(createChangeLogLockContainerStatement);
             database.commit();
-            log.fine("Created database lock Container: " + createChangeLogLockContainerStatement.toJs());
+            log.info("Created database lock Container: " + createChangeLogLockContainerStatement.toJs());
             this.hasDatabaseChangeLogLockTable = true;
         }
     }

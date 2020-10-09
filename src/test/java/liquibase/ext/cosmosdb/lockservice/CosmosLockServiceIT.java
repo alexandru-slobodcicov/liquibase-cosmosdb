@@ -20,7 +20,6 @@ package liquibase.ext.cosmosdb.lockservice;
  * #L%
  */
 
-import liquibase.Scope;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.executor.ExecutorService;
 import liquibase.ext.cosmosdb.AbstractCosmosWithConnectionIntegrationTest;
@@ -42,13 +41,11 @@ class CosmosLockServiceIT extends AbstractCosmosWithConnectionIntegrationTest {
 
     public CosmosLockService cosmosLockService;
     private CountContainersByNameStatement countContainersByNameStatement;
-    protected CosmosExecutor cosmosExecutor;
 
     @BeforeEach
     protected void setUpEach() {
         super.setUpEach();
         cosmosLockService = (CosmosLockService) LockServiceFactory.getInstance().getLockService(cosmosLiquibaseDatabase);
-        cosmosExecutor = (CosmosExecutor) Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor(CosmosExecutor.COSMOS_EXECUTOR_NAME, cosmosLiquibaseDatabase);
         cosmosLockService.reset();
         countContainersByNameStatement = new CountContainersByNameStatement(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName());
     }

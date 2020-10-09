@@ -21,7 +21,6 @@ package liquibase.ext.cosmosdb.database;
  */
 
 import liquibase.CatalogAndSchema;
-import liquibase.Scope;
 import liquibase.change.Change;
 import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.database.AbstractJdbcDatabase;
@@ -93,12 +92,7 @@ public class CosmosLiquibaseDatabase extends AbstractJdbcDatabase {
 
     @Override
     public String getLineComment() {
-        return "//";
-    }
-
-    @Override
-    public String getAutoIncrementClause(final BigInteger startWith, final BigInteger incrementBy, final String generationType, final Boolean defaultOnNull) {
-        return null;
+        return "<!-- -->";
     }
 
     @Override
@@ -207,7 +201,7 @@ public class CosmosLiquibaseDatabase extends AbstractJdbcDatabase {
 
     @Override
     public void dropDatabaseObjects(final CatalogAndSchema schemaToDrop) throws LiquibaseException {
-        final Executor executor = Scope.getCurrentScope().getSingleton(ExecutorService.class).getExecutor(CosmosExecutor.COSMOS_EXECUTOR_NAME, this);
+        final Executor executor = ExecutorService.getInstance().getExecutor(this);
         final DeleteAllContainersStatement deleteAllContainersStatement = new DeleteAllContainersStatement(Arrays.asList(getDatabaseChangeLogTableName(), getDatabaseChangeLogLockTableName()));
         executor.execute(deleteAllContainersStatement);
         ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(this).destroy();
