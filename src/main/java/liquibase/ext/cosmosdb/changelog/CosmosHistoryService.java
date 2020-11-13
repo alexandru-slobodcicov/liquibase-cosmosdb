@@ -20,7 +20,6 @@ package liquibase.ext.cosmosdb.changelog;
  * #L%
  */
 
-import com.azure.cosmos.CosmosDatabase;
 import liquibase.Scope;
 import liquibase.changelog.AbstractChangeLogHistoryService;
 import liquibase.changelog.ChangeSet;

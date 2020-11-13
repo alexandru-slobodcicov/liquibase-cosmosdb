@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.liquibase.ext</groupId>
     <artifactId>liquibase-cosmosdb</artifactId>
@@ -35,32 +36,35 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
-        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+
         <liquibase.version>4.1.1</liquibase.version>
-        <jupiter.version>5.6.2</jupiter.version>
-        <jupiter.surefire.version>1.3.2</jupiter.surefire.version>
+        <azure-cosmos.version>4.4.0</azure-cosmos.version>
+
         <lombok.version>1.18.12</lombok.version>
         <hamcrest.version>1.3</hamcrest.version>
         <assertj.version>3.17.1</assertj.version>
+        <jupiter.version>5.7.0</jupiter.version>
+        <assertj-core.version>3.17.1</assertj-core.version>
+        <mockito-core.version>3.3.3</mockito-core.version>
+        <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
+
+        <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
         <license.licenseName>mastercard_apache_license</license.licenseName>
         <license.licenseResolver>${project.baseUri}/src/license</license.licenseResolver>
         <license.inceptionYear>2019</license.inceptionYear>
         <license.organizationName>Mastercard</license.organizationName>
         <license.trimHeaderLine>true</license.trimHeaderLine>
-        <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
         <maven-help-plugin.version>3.2.0</maven-help-plugin.version>
-        <azure-cosmos.version>4.4.0</azure-cosmos.version>
-        <assertj-core.version>3.17.1</assertj-core.version>
-        <mockito-core.version>3.3.3</mockito-core.version>
-        <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+        <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
+        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
             <version>${liquibase.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
@@ -125,6 +129,14 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                        <reportFormat>plain</reportFormat>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${maven-failsafe-plugin.version}</version>
                 </plugin>
@@ -167,18 +179,11 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
                         <optimize>true</optimize>
                         <debug>true</debug>
                         <encoding>${project.build.sourceEncoding}</encoding>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                        <reportFormat>plain</reportFormat>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -194,7 +199,7 @@
                             <configuration>
                                 <rules>
                                     <requireJavaVersion>
-                                        <version>1.8</version>
+                                        <version>${maven.compiler.target}</version>
                                     </requireJavaVersion>
                                 </rules>
                             </configuration>
@@ -204,12 +209,12 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>${build-helper-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>${maven-release-plugin.version}</version>
                     <configuration>
                         <stagingRepository>/tmp/maven-snapshot</stagingRepository>
                         <mavenExecutorId>forked-path</mavenExecutorId>
@@ -230,7 +235,7 @@
                         <doctitle>Liquibase CDI ${project.version} API</doctitle>
                         <quiet>true</quiet>
                         <doclint>none</doclint>
-                        <encoding>UTF-8</encoding>
+                        <encoding>${project.build.sourceEncoding}</encoding>
                         <jarOutputDirectory>${project.basedir}/target</jarOutputDirectory>
                     </configuration>
                     <executions>
@@ -250,7 +255,7 @@
         <profile>
             <id>run-its</id>
             <properties>
-                <db.connection.uri>cosmosdb://ech-0A9D8266.mastercard.int:C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==@ech-0A9D8266.mastercard.int:8081/testdb1</db.connection.uri>
+                <db.connection.uri>cosmosdb://localhost:C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==@localhost:8081/testdb1</db.connection.uri>
             </properties>
             <build>
                 <plugins>

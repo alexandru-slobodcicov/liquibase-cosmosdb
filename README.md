@@ -125,18 +125,21 @@ Otherwise can be fallowed the [Java Application Quickstart Prerequisites](https:
 #### Import keys to Trust Store
 <p>
 You need to export the emulator certificate to successfully use the emulator endpoint from languages and runtime environments that do not integrate with the Windows Certificate Store.
+
 [Export the Azure Cosmos DB TLS/SSL certificate](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-export-ssl-certificates)
+```shell script
+sudo $JAVA_HOME/bin/keytool -delete -alias cosmos_emulator
+# import the cert
+sudo $JAVA_HOME/bin/keytool -importcert -keystore cacerts.jks -alias cosmos_emulator -file cosmos_emulator.cer
+```
 </p>
 
 <p>
 After certificate is imported should be passed as system parameters:
 
-```
+```shell script
 mvn -Djavax.net.ssl.trustStore="<path_to_certs>\cacerts.jks" -Djavax.net.ssl.trustStorePassword=changeit
 ```
-
-</path_to_certs>
-
 ### Installing
 
 * Clone the project

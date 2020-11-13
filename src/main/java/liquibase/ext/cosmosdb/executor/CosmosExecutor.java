@@ -42,14 +42,11 @@ import static java.util.Collections.emptyList;
 import static liquibase.servicelocator.PrioritizedService.PRIORITY_DATABASE;
 
 @LiquibaseService
+@NoArgsConstructor()
 public class CosmosExecutor extends AbstractExecutor {
 
     public static final String COSMOS_EXECUTOR_NAME = "jdbc";
     private final Logger log = Scope.getCurrentScope().getLog(getClass());
-
-    public CosmosExecutor() {
-        super();
-    }
 
     @Getter
     @Setter
