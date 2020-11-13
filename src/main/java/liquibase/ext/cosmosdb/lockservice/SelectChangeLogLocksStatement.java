@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.lockservice;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -21,7 +21,7 @@ package liquibase.ext.cosmosdb.lockservice;
  */
 
 import com.azure.cosmos.CosmosDatabase;
-import liquibase.ext.cosmosdb.statement.AbstractNoSqlRepositoryStatement;
+import liquibase.ext.cosmosdb.statement.AbstractNoSqlContainerStatement;
 import liquibase.ext.cosmosdb.statement.NoSqlQueryForListStatement;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class SelectChangeLogLocksStatement extends AbstractNoSqlRepositoryStatement implements NoSqlQueryForListStatement {
+public class SelectChangeLogLocksStatement extends AbstractNoSqlContainerStatement implements NoSqlQueryForListStatement {
 
     public static final String COMMAND_NAME = "selectLocks";
 

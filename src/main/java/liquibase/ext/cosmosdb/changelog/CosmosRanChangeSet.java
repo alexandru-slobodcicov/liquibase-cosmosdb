@@ -7,7 +7,6 @@ import liquibase.changelog.ChangeSet;
 import liquibase.changelog.RanChangeSet;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
@@ -45,8 +44,6 @@ public class CosmosRanChangeSet extends RanChangeSet {
     @Setter
     private String liquibase;
 
-
-
     public CosmosRanChangeSet(final String uuid, final String changeLog, final String id, final String author, final CheckSum lastCheckSum, final Date dateExecuted
             , final String tag, final ChangeSet.ExecType execType, final String description, final String comments, final ContextExpression contextExpression, final Collection<ContextExpression> inheritableContexts
             , final Labels labels, final String deploymentId, final Integer orderExecuted, final String liquibase) {
@@ -55,12 +52,9 @@ public class CosmosRanChangeSet extends RanChangeSet {
         this.uuid = uuid;
         this.inheritableContexts = inheritableContexts;
         this.liquibase = liquibase;
-
     }
 
     public CosmosRanChangeSet(final ChangeSet changeSet, final ChangeSet.ExecType execType, final ContextExpression contextExpression, final Labels labels) {
         super(changeSet, execType, contextExpression, labels);
     }
-
-
 }

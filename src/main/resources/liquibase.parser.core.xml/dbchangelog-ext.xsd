@@ -45,6 +45,36 @@
 
     </xsd:element>
 
+    <xsd:element name="createStoredProcedure">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="procedureProperties" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+            <xsd:attribute name="replaceExisting" type="xsd:boolean" use="optional" default="false"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:element name="deleteStoredProcedure">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="procedureProperties" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+            <xsd:attribute name="skipMissing" type="xsd:boolean" use="optional" default="false"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
     <xsd:element name="createItem">
 
         <xsd:complexType>
@@ -80,6 +110,20 @@
             <xsd:all>
                 <xsd:element name="query" type="xsd:string"/>
                 <xsd:element name="document" type="xsd:string"/>
+            </xsd:all>
+
+            <xsd:attribute name="containerName" type="xsd:string" use="required"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:element name="deleteEachItem">
+
+        <xsd:complexType>
+
+            <xsd:all>
+                <xsd:element name="query" type="xsd:string"/>
             </xsd:all>
 
             <xsd:attribute name="containerName" type="xsd:string" use="required"/>

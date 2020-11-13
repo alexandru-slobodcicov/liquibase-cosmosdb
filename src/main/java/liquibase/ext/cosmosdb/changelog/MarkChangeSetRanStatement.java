@@ -4,18 +4,17 @@ import com.azure.cosmos.CosmosDatabase;
 import liquibase.change.Change;
 import liquibase.change.core.TagDatabaseChange;
 import liquibase.changelog.ChangeSet;
-import liquibase.changelog.RanChangeSet;
 import liquibase.exception.UnexpectedLiquibaseException;
-import liquibase.ext.cosmosdb.statement.AbstractNoSqlRepositoryStatement;
+import liquibase.ext.cosmosdb.statement.AbstractNoSqlContainerStatement;
 import liquibase.ext.cosmosdb.statement.NoSqlExecuteStatement;
 import liquibase.util.LiquibaseUtil;
+import liquibase.util.StringUtil;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.UUID;
 
-public class MarkChangeSetRanStatement extends AbstractNoSqlRepositoryStatement implements NoSqlExecuteStatement {
+public class MarkChangeSetRanStatement extends AbstractNoSqlContainerStatement implements NoSqlExecuteStatement {
 
     public static final String COMMAND_NAME = "markChangeSet";
 
@@ -75,7 +74,7 @@ public class MarkChangeSetRanStatement extends AbstractNoSqlRepositoryStatement 
 
             if (execType.ranBefore) {
                 //TODO: update
-                final RanChangeSet updateRanChangeSet = null;
+//                final RanChangeSet updateRanChangeSet = null;
 //            runStatement = new UpdateStatement(database.getLiquibaseCatalogName(), database.getLiquibaseSchemaName(), database.getDatabaseChangeLogTableName())
 //                    .addNewColumnValue("DATEEXECUTED", new DatabaseFunction(dateValue))
 //                    .addNewColumnValue("ORDEREXECUTED", ChangeLogHistoryServiceFactory.getInstance().getChangeLogService(database).getNextSequenceValue())
@@ -125,7 +124,7 @@ public class MarkChangeSetRanStatement extends AbstractNoSqlRepositoryStatement 
             for (Change change : changeSet.getChanges()) {
                 if (change instanceof TagDatabaseChange) {
                     TagDatabaseChange tagChange = (TagDatabaseChange) change;
-                    tag = StringUtils.trimToNull(tagChange.getTag());
+                    tag = StringUtil.trimToNull(tagChange.getTag());
                 }
             }
             return tag;

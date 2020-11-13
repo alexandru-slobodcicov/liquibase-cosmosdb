@@ -23,39 +23,39 @@ package liquibase.ext.cosmosdb.change;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
-import liquibase.ext.cosmosdb.statement.CreateContainerStatement;
+import liquibase.ext.cosmosdb.statement.DeleteEachItemStatement;
 import liquibase.statement.SqlStatement;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
-@DatabaseChange(name = "replaceContainer",
-        description = "Replace container " +
-                "https://docs.microsoft.com/en-us/java/api/com.azure.cosmos.cosmoscontainer.replace?view=azure-java-stable\n" +
-                "https://docs.microsoft.com/en-us/rest/api/cosmos-db/replace-a-collection",
+@DatabaseChange(name = "deleteEachItem",
+        description = "Deletes in a loop each Document in a Query " +
+                "https://docs.microsoft.com/en-us/java/api/com.azure.cosmos.cosmoscontainer.deleteitem?view=azure-java-stable\n" +
+                "https://docs.microsoft.com/en-us/rest/api/cosmos-db/delete-a-document\n" +
+                "https://docs.microsoft.com/en-us/rest/api/cosmos-db/query-documents",
         priority = ChangeMetaData.PRIORITY_DEFAULT, appliesTo = "container")
 @NoArgsConstructor
 @Getter
 @Setter
-public class ReplaceContainerChange extends AbstractCosmosChange {
+public class DeleteEachItemChange extends AbstractCosmosChange {
 
     private String containerName;
-    private String options;
+    private String query;
 
     @Override
     public String getConfirmationMessage() {
-        return "Container replaced: " + containerName;
+        return "Items deleted in container: " + containerName;
     }
 
     @Override
     public SqlStatement[] generateStatements(final Database database) {
 
-        final CreateContainerStatement createContainerStatement
-                = new CreateContainerStatement(containerName, options);
+        final DeleteEachItemStatement deleteEachItemStatement
+                = new DeleteEachItemStatement(containerName, query);
 
         return new SqlStatement[]{
-                createContainerStatement
+                deleteEachItemStatement
         };
     }
 }

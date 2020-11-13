@@ -1,8 +1,8 @@
 <!--
   #%L
-  Liquibase MongoDB Extension
+  Liquibase CosmosDB Extension
   %%
-  Copyright (C) 2019 Mastercard
+  Copyright (C) 2020 Mastercard
   %%
   Licensed under the Apache License, Version 2.0 (the "License").
   You may not use this file except in compliance with the License.
@@ -27,51 +27,70 @@
     <changeSet id="1" author="alex">
         <comment>Create container</comment>
 
-        <ext:createContainer containerName="containerUpsert1"/>
+        <ext:createContainer containerName="deleteEachContainer1"/>
 
     </changeSet>
 
     <changeSet id="2" author="alex">
 
-        <comment>Insert an item</comment>
+        <comment>Insert three items</comment>
 
-        <ext:createItem containerName="containerUpsert1">
-
+        <ext:createItem containerName="deleteEachContainer1">
             <ext:document>
                 <!-- @formatter:off -->
                 {
                     "id" : "1",
-                    "oldField" : "Will be Removed",
-                    "changeValueField" : "Old Value",
-                    "sameValueField" : "Remains Same",
-                    "partition" : "default"
+                    "name" : "To Be Deleted"
                 }
                 <!-- @formatter:on -->
             </ext:document>
+        </ext:createItem>
 
+        <ext:createItem containerName="deleteEachContainer1">
+            <ext:document>
+                <!-- @formatter:off -->
+                {
+                    "id" : "2",
+                    "name" : "Not To Be Deleted"
+                }
+                <!-- @formatter:on -->
+            </ext:document>
+        </ext:createItem>
+
+        <ext:createItem containerName="deleteEachContainer1">
+            <ext:document>
+                <!-- @formatter:off -->
+                {
+                    "id" : "3",
+                    "name" : "To Be Deleted"
+                }
+                <!-- @formatter:on -->
+            </ext:document>
         </ext:createItem>
 
     </changeSet>
 
     <changeSet id="3" author="alex">
 
-        <comment>Upsert an item</comment>
+        <comment>Delete each item by query</comment>
 
-        <ext:upsertItem containerName="containerUpsert1">
+        <ext:deleteEachItem containerName="deleteEachContainer1">
 
-            <ext:document>
+            <ext:query>
                 <!-- @formatter:off -->
                 {
-                "id" : "1",
-                "changeValueField" : "New Value",
-                "sameValueField" : "Remains Same",
-                "newField" : "Will be Added",
-                "partition" : "default"
+                    "query" : "SELECT * FROM c WHERE c.name = @name",
+                    "parameters" : [
+                        {
+                            "name" : "@name",
+                            "value" : "To Be Deleted"
+                        }
+                    ]
                 }
                 <!-- @formatter:on -->
-            </ext:document>
+            </ext:query>
 
-        </ext:upsertItem>
+        </ext:deleteEachItem>
 
     </changeSet>
 

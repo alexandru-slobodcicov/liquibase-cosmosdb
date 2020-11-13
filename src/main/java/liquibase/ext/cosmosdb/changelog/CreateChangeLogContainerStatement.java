@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.changelog;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -22,6 +22,7 @@ package liquibase.ext.cosmosdb.changelog;
 
 import com.azure.cosmos.implementation.DocumentCollection;
 import liquibase.ext.cosmosdb.statement.CreateContainerStatement;
+import liquibase.ext.cosmosdb.statement.JsonUtils;
 
 public class CreateChangeLogContainerStatement extends CreateContainerStatement {
 
@@ -52,9 +53,7 @@ public class CreateChangeLogContainerStatement extends CreateContainerStatement 
                     "  \"partitionKey\": {  \n" +
                     "    \"paths\": [  \n" +
                     "      \"%s\"  \n" +
-                    "    ],  \n" +
-                    "    \"kind\": \"Hash\",\n" +
-                    "     \"Version\": 2\n" +
+                    "    ]  \n" +
                     "  },   \n" +
                     "  \"uniqueKeyPolicy\": {\n" +
                     "        \"uniqueKeys\": [\n" +
@@ -67,7 +66,7 @@ public class CreateChangeLogContainerStatement extends CreateContainerStatement 
                     "        ]\n" +
                     "  },  \n" +
                     "}  ",
-            CreateContainerStatement.DEFAULT_PARTITION_KEY_PATH,
+            JsonUtils.DEFAULT_PARTITION_KEY_PATH,
             CosmosRanChangeSet.Fields.FILE_NAME,
             CosmosRanChangeSet.Fields.AUTHOR,
             CosmosRanChangeSet.Fields.CHANGE_SET_ID);

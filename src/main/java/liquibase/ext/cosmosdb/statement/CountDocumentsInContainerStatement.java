@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -22,7 +22,6 @@ package liquibase.ext.cosmosdb.statement;
 
 import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.CosmosDatabase;
-import liquibase.ext.cosmosdb.persistence.AbstractRepository;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,7 +31,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class CountDocumentsInContainerStatement extends AbstractNoSqlStatement implements NoSqlQueryForLongStatement{
+public class CountDocumentsInContainerStatement extends AbstractNoSqlStatement implements NoSqlQueryForLongStatement {
 
     public static final String COMMAND_NAME = "countDocumentsInContainer";
 
@@ -56,7 +55,7 @@ public class CountDocumentsInContainerStatement extends AbstractNoSqlStatement i
     @Override
     public long queryForLong(final CosmosDatabase cosmosDatabase) {
         final CosmosContainer cosmosContainer = cosmosDatabase.getContainer(containerName);
-        return cosmosContainer.readAllItems(AbstractRepository.DEFAULT_PARTITION_KEY, Map.class).stream().count();
+        return cosmosContainer.readAllItems(JsonUtils.DEFAULT_PARTITION_KEY, Map.class).stream().count();
     }
 
     @Override

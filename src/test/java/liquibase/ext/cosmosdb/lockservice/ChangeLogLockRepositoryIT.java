@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.Optional;
 
-import static liquibase.ext.cosmosdb.persistence.AbstractItemToDocumentConverter.DEFAULT_PARTITION_KEY_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ChangeLogLockRepositoryIT extends AbstractCosmosWithConnectionIntegrationTest {
@@ -34,7 +33,6 @@ class ChangeLogLockRepositoryIT extends AbstractCosmosWithConnectionIntegrationT
                 .lockGranted(new Date())
                 .lockedBy("me")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock);
@@ -55,7 +53,6 @@ class ChangeLogLockRepositoryIT extends AbstractCosmosWithConnectionIntegrationT
                 .lockGranted(new Date())
                 .lockedBy("me")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock1);
@@ -67,7 +64,6 @@ class ChangeLogLockRepositoryIT extends AbstractCosmosWithConnectionIntegrationT
                 .lockGranted(new Date())
                 .lockedBy("me2")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock2);
@@ -84,7 +80,6 @@ class ChangeLogLockRepositoryIT extends AbstractCosmosWithConnectionIntegrationT
                 .lockGranted(new Date())
                 .lockedBy("me")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock1);
@@ -100,7 +95,6 @@ class ChangeLogLockRepositoryIT extends AbstractCosmosWithConnectionIntegrationT
                 .lockGranted(new Date())
                 .lockedBy("me2")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock2);
@@ -130,7 +124,6 @@ class ChangeLogLockRepositoryIT extends AbstractCosmosWithConnectionIntegrationT
                 .lockGranted(new Date())
                 .lockedBy("me2")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock1);

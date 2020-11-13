@@ -2,9 +2,9 @@ package liquibase.ext.cosmosdb.lockservice;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
- * Copyright (C) 2019 Mastercard
+ * Copyright (C) 2020 Mastercard
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static liquibase.ext.cosmosdb.persistence.AbstractItemToDocumentConverter.DEFAULT_PARTITION_KEY_VALUE;
 import static liquibase.servicelocator.PrioritizedService.PRIORITY_DATABASE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -180,7 +179,6 @@ class CosmosLockServiceIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .lockGranted(new Date())
                 .lockedBy("me1")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock1);
@@ -193,7 +191,6 @@ class CosmosLockServiceIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .lockGranted(new Date())
                 .lockedBy("me2")
                 .locked(true)
-                .partition(DEFAULT_PARTITION_KEY_VALUE)
                 .build();
 
         repository.upsert(expectedChangeLogLock2);

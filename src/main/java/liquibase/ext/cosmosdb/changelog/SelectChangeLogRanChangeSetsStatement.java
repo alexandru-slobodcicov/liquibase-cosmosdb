@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.changelog;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -22,7 +22,7 @@ package liquibase.ext.cosmosdb.changelog;
 
 import com.azure.cosmos.CosmosDatabase;
 import liquibase.changelog.RanChangeSet;
-import liquibase.ext.cosmosdb.statement.AbstractNoSqlRepositoryStatement;
+import liquibase.ext.cosmosdb.statement.AbstractNoSqlContainerStatement;
 import liquibase.ext.cosmosdb.statement.NoSqlQueryForListStatement;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class SelectChangeLogRanChangeSetsStatement extends AbstractNoSqlRepositoryStatement implements NoSqlQueryForListStatement {
+public class SelectChangeLogRanChangeSetsStatement extends AbstractNoSqlContainerStatement implements NoSqlQueryForListStatement {
 
     public static final String COMMAND_NAME = "selectRanChangeSets";
 

@@ -1,0 +1,130 @@
+<!--
+  #%L
+  Liquibase CosmosDB Extension
+  %%
+  Copyright (C) 2020 Mastercard
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License").
+  You may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="alex">
+        <comment>Create Procedure Container</comment>
+
+        <ext:createContainer containerName="procedureContainer1">
+
+            <ext:options>
+                <!-- @formatter:off -->
+                {
+                    "partitionKey": {
+                        "paths": [
+                            "/null"
+                        ],
+                        "kind": "Hash"
+                    }
+                }
+                <!-- @formatter:on -->
+            </ext:options>
+
+        </ext:createContainer>
+
+    </changeSet>
+
+    <changeSet id="2" author="alex">
+        <comment>Create Stored Procedure</comment>
+
+        <ext:createStoredProcedure containerName="procedureContainer1">
+
+            <ext:procedureProperties>
+                <!-- @formatter:off -->
+                {
+                    "id": "sproc_1",
+                    "body": "function sproc_1() {var context = getContext(); var response = context.getResponse(); response.setBody(1);}"
+
+                }
+                <!-- @formatter:on -->
+            </ext:procedureProperties>
+
+        </ext:createStoredProcedure>
+
+    </changeSet>
+
+    <!--TODO; Replace Not working  -->
+    <!--changeSet id="3" author="alex">
+        <comment>Replace Stored Procedure</comment>
+
+        <ext:createStoredProcedure containerName="procedureContainer1">
+
+            <ext:procedureProperties>
+                <- @formatter:off ->
+                {
+                "body": "function sproc_2() {var context = getContext(); var response = context.getResponse(); response.setBody(\"Original\");}",
+                "id": "sproc_2"
+                }
+                <- @formatter:on ->
+            </ext:procedureProperties>
+
+        </ext:createStoredProcedure>
+
+        <ext:createStoredProcedure containerName="procedureContainer1" replaceExisting="true">
+
+            <ext:procedureProperties>
+                <- @formatter:off ->
+                {
+                "body": "function sproc_2() {var context = getContext(); var response = context.getResponse(); response.setBody(\"Replaced\");}",
+                "id": "sproc_2"
+                }
+                <- @formatter:on ->
+            </ext:procedureProperties>
+
+        </ext:createStoredProcedure>
+
+    </changeSet-->
+
+    <changeSet id="4" author="alex">
+        <comment>Delete Stored Procedure</comment>
+
+        <ext:createStoredProcedure containerName="procedureContainer1">
+
+            <ext:procedureProperties>
+                <!-- @formatter:off -->
+                {
+                "body": "function sproc_3() {var context = getContext(); var response = context.getResponse(); response.setBody(\"To Delete\");}",
+                "id": "sproc_3"
+                }
+                <!-- @formatter:on -->
+            </ext:procedureProperties>
+
+        </ext:createStoredProcedure>
+
+        <ext:deleteStoredProcedure containerName="procedureContainer1">
+
+            <ext:procedureProperties>
+                <!-- @formatter:off -->
+                {
+                "id": "sproc_3"
+                }
+                <!-- @formatter:on -->
+            </ext:procedureProperties>
+
+        </ext:deleteStoredProcedure>
+
+    </changeSet>
+
+</databaseChangeLog>

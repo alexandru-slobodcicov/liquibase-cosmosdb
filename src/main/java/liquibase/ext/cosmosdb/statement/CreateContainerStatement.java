@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -21,24 +21,17 @@ package liquibase.ext.cosmosdb.statement;
  */
 
 import com.azure.cosmos.CosmosDatabase;
-import com.azure.cosmos.implementation.DocumentCollection;
 import com.azure.cosmos.models.CosmosContainerProperties;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-
-import static java.util.Objects.nonNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class CreateContainerStatement extends AbstractNoSqlStatement implements NoSqlExecuteStatement {
-
-    public static final String DEFAULT_PARTITION_KEY_NAME = "partition";
-    public static final String DEFAULT_PARTITION_KEY_PATH = "/" + DEFAULT_PARTITION_KEY_NAME;
 
     public static final String COMMAND_NAME = "createContainer";
 
@@ -69,36 +62,10 @@ public class CreateContainerStatement extends AbstractNoSqlStatement implements 
     @Override
     public void execute(final CosmosDatabase cosmosDatabase) {
 
-        final CosmosContainerProperties cosmosContainerProperties = toContainerProperties(options);
+        final CosmosContainerProperties cosmosContainerProperties = JsonUtils.toContainerProperties(containerName, options);
         cosmosDatabase.createContainer(cosmosContainerProperties);
     }
 
-    protected CosmosContainerProperties toContainerProperties(final String options) {
-
-        final CosmosContainerProperties cosmosContainerProperties = new CosmosContainerProperties(containerName, DEFAULT_PARTITION_KEY_PATH);
-        if (StringUtils.isNotEmpty(options)) {
-            final DocumentCollection documentCollection = new DocumentCollection(options);
-            if(nonNull(documentCollection.getPartitionKey())) {
-                cosmosContainerProperties.setPartitionKeyDefinition(documentCollection.getPartitionKey());
-            }
-            if(nonNull(documentCollection.getIndexingPolicy())) {
-                cosmosContainerProperties.setIndexingPolicy(documentCollection.getIndexingPolicy());
-            }
-            if(nonNull(documentCollection.getUniqueKeyPolicy())) {
-                cosmosContainerProperties.setUniqueKeyPolicy(documentCollection.getUniqueKeyPolicy());
-            }
-            if(nonNull(documentCollection.getAnalyticalStoreTimeToLiveInSeconds())) {
-                cosmosContainerProperties.setAnalyticalStoreTimeToLiveInSeconds(documentCollection.getAnalyticalStoreTimeToLiveInSeconds());
-            }
-            if(nonNull(documentCollection.getDefaultTimeToLive())) {
-                cosmosContainerProperties.setDefaultTimeToLiveInSeconds(documentCollection.getDefaultTimeToLive());
-            }
-            if(nonNull(documentCollection.getConflictResolutionPolicy())) {
-                cosmosContainerProperties.setConflictResolutionPolicy(documentCollection.getConflictResolutionPolicy());
-            }
-        }
-        return cosmosContainerProperties;
-    }
 
     @Override
     public String toString() {

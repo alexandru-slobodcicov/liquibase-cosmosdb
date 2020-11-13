@@ -8,14 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CosmosConnectionIT extends AbstractCosmosIntegrationTest {
 
-    @Test
-    void getURLTest() {
-    }
-
-    @Test
-    void isClosedTest() {
-    }
-
     @SneakyThrows
     @Test
     void openTest() {
@@ -28,10 +20,6 @@ class CosmosConnectionIT extends AbstractCosmosIntegrationTest {
         assertThat(connection.getCosmosClient()).isNotNull();
         assertThat(connection.getCosmosDatabase()).isNotNull();
         assertThat(connection.isClosed()).isFalse();
-        assertThat(connection.getURL()).isEqualTo(connectionString);
     }
 
-    @Test
-    void closeTest() {
-    }
 }

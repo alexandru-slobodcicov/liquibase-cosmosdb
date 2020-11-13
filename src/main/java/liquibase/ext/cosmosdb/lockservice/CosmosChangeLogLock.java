@@ -2,9 +2,9 @@ package liquibase.ext.cosmosdb.lockservice;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
- * Copyright (C) 2019 Mastercard
+ * Copyright (C) 2020 Mastercard
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import lombok.experimental.FieldNameConstants;
 
 import java.util.Date;
 
-import static liquibase.ext.cosmosdb.persistence.AbstractItemToDocumentConverter.DEFAULT_PARTITION_KEY_VALUE;
-
 @Getter
 @Setter
 @ToString
@@ -40,22 +38,16 @@ public class CosmosChangeLogLock extends DatabaseChangeLogLock{
     private Date lockGranted;
     private String lockedBy;
     private Boolean locked;
-    private String partition;
 
     public CosmosChangeLogLock() {
         this(1, new Date(), "default", false);
     }
 
-    public CosmosChangeLogLock(int id, Date lockGranted, String lockedBy, Boolean locked) {
-        this(id, lockGranted, lockedBy, locked, DEFAULT_PARTITION_KEY_VALUE);
-    }
-
-    public CosmosChangeLogLock(final int id, final Date lockGranted, final String lockedBy, final Boolean locked, final String partition) {
+    public CosmosChangeLogLock(final int id, final Date lockGranted, final String lockedBy, final Boolean locked) {
         super(id, lockGranted, lockedBy);
         this.id = id;
         this.lockGranted = lockGranted;
         this.lockedBy = lockedBy;
         this.locked = locked;
-        this.partition = partition;
     }
 }
