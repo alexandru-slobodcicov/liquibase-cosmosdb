@@ -1,17 +1,19 @@
-language: java
-jdk: openjdk8
+language: shell
 
-os: linux
+os: windows
 
 services:
   - docker
   
-#before_script:
-#  - docker run --name azure-cosmosdb-emulator --memory 2GB --interactive --tty -p 8081:8081 -p 8900:8900 -p 8901:8901 -p 8902:8902 -p 10250:10250 -p 10251:10251 -p 10252:10252 -p 10253:10253 -p 10254:10254 -p 10255:10255 -p 10256:10256 -p 10350:10350 mcr.microsoft.com/cosmosdb/windows/azure-cosmos-emulator
-#  age operating system "windows" cannot be used on this platform.
-#  See 'docker run --help'.
-#  The command "docker run --name azure-cosmosdb-emulator --memory 2GB --interactive --tty -p 8081:8081 -p 8900:8900 -p 8901:8901 -p 8902:8902 -p 10250:10250 -p 10251:10251 -p 10252:10252 -p 10253:10253 -p 10254:10254 -p 10255:10255 -p 10256:10256 -p 10350:10350 mcr.microsoft.com/cosmosdb/windows/azure-cosmos-emulator" failed and exited with 125 during .
+before_script:
+  - choco install openjdk8
+  - export JAVA_HOME='/c/Program Files/OpenJDK/openjdk-8u272-b10'
+  - echo $JAVA_HOME
+  - choco install maven
+  - export M2_HOME=/c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3
+  - echo $M2_HOME
+  - echo $PATH
+  #- docker run --name azure-cosmosdb-emulator --memory 2GB -p 8081:8081 -p 8900:8900 -p 8901:8901 -p 8902:8902 -p 10250:10250 -p 10251:10251 -p 10252:10252 -p 10253:10253 -p 10254:10254 -p 10255:10255 -p 10256:10256 -p 10350:10350 mcr.microsoft.com/cosmosdb/windows/azure-cosmos-emulator
 
 script:
-  - mvn clean install
-#  - mvn clean install -Prun-its
+  - $M2_HOME/bin/mvn clean install
