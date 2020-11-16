@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -44,7 +44,7 @@ public class ReplaceContainerStatement extends CreateContainerStatement {
 
     @Override
     public void execute(final CosmosDatabase cosmosDatabase) {
-        final CosmosContainerProperties cosmosContainerProperties = toContainerProperties(options);
+        final CosmosContainerProperties cosmosContainerProperties = JsonUtils.toContainerProperties(containerName, options);
         cosmosDatabase.getContainer(containerName).replace(cosmosContainerProperties);
     }
 

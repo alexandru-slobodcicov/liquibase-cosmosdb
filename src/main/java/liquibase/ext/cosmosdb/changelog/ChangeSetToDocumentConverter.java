@@ -5,7 +5,7 @@ import liquibase.Labels;
 import liquibase.change.CheckSum;
 import liquibase.changelog.ChangeSet;
 import liquibase.ext.cosmosdb.persistence.AbstractItemToDocumentConverter;
-import liquibase.ext.cosmosdb.statement.CreateContainerStatement;
+import liquibase.ext.cosmosdb.statement.JsonUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class ChangeSetToDocumentConverter extends AbstractItemToDocumentConverte
         final Map<String, Object> document = new HashMap<>();
         // "id" is an internal String field required for CosmosContainer
         // will populate with Random UUID String thus being unique
-        document.put(COSMOS_ID_FIELD, item.getUuid());
+        document.put(JsonUtils.COSMOS_ID_FIELD, item.getUuid());
         // The ChangeSet.getId() is populated to "changeSetId" field
         document.put(CosmosRanChangeSet.Fields.FILE_NAME, item.getChangeLog());
         document.put(CosmosRanChangeSet.Fields.CHANGE_SET_ID, item.getId());
@@ -42,8 +42,6 @@ public class ChangeSetToDocumentConverter extends AbstractItemToDocumentConverte
         document.put(CosmosRanChangeSet.Fields.ORDER_EXECUTED, item.getOrderExecuted());
         document.put(CosmosRanChangeSet.Fields.LIQUIBASE, item.getLiquibase());
 
-        document.put(CreateContainerStatement.DEFAULT_PARTITION_KEY_NAME, DEFAULT_PARTITION_KEY_VALUE);
-
         return document;
     }
 
@@ -51,7 +49,7 @@ public class ChangeSetToDocumentConverter extends AbstractItemToDocumentConverte
     public CosmosRanChangeSet fromDocument(final Map<String, Object> document) {
         final CosmosRanChangeSet item = new CosmosRanChangeSet(
                 // Internal id which is populated with UUID
-                (String) document.get(COSMOS_ID_FIELD),
+                (String) document.get(JsonUtils.COSMOS_ID_FIELD),
                 (String) document.get(CosmosRanChangeSet.Fields.FILE_NAME),
                 // Change Set Id which is populated to id POJO field
                 (String) document.get(CosmosRanChangeSet.Fields.CHANGE_SET_ID),
@@ -63,10 +61,10 @@ public class ChangeSetToDocumentConverter extends AbstractItemToDocumentConverte
                         .map(s -> ChangeSet.ExecType.valueOf((String) s)).orElse(null),
                 (String) document.get(CosmosRanChangeSet.Fields.DESCRIPTION),
                 (String) document.get(CosmosRanChangeSet.Fields.COMMENTS),
+                new ContextExpression((String)document.get(CosmosRanChangeSet.Fields.CONTEXT_EXPRESSION)),
                 // TODO: parse in and out
                 null,
-                null,
-                null,
+                new Labels((String)document.get(CosmosRanChangeSet.Fields.LABELS)),
                 (String) document.get(CosmosRanChangeSet.Fields.DEPLOYMENT_ID),
                 (Integer) ofNullable(document.get(CosmosRanChangeSet.Fields.ORDER_EXECUTED)).orElse(null),
                 (String) document.get(CosmosRanChangeSet.Fields.LIQUIBASE)

@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -31,7 +31,7 @@ import static java.lang.Boolean.TRUE;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class DeleteContainerStatement extends AbstractNoSqlRepositoryStatement implements NoSqlExecuteStatement {
+public class DeleteContainerStatement extends AbstractNoSqlContainerStatement implements NoSqlExecuteStatement {
 
     public static final String COMMAND_NAME = "delete";
 

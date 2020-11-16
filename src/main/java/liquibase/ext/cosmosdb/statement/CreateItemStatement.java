@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -30,7 +30,7 @@ import static liquibase.ext.cosmosdb.statement.JsonUtils.orEmptyDocument;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class CreateItemStatement extends AbstractNoSqlRepositoryStatement implements NoSqlExecuteStatement {
+public class CreateItemStatement extends AbstractNoSqlContainerStatement implements NoSqlExecuteStatement {
 
     public static final String COMMAND_NAME = "createItem";
 

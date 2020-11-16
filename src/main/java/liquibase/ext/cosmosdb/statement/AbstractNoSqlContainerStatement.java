@@ -20,10 +20,28 @@ package liquibase.ext.cosmosdb.statement;
  * #L%
  */
 
-import com.azure.cosmos.CosmosDatabase;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public interface NoSqlQueryForObjectStatement {
+@AllArgsConstructor
+public abstract class AbstractNoSqlContainerStatement extends AbstractNoSqlStatement {
 
-   <T> T queryForObject(CosmosDatabase cosmosDatabase, Class<T> requiredType);
+    public static final Integer ITEM_ID_1 = 1;
+    public static final String ITEM_ID_1_STRING = "1";
 
+    @Getter
+    protected final String containerName;
+
+    public AbstractNoSqlContainerStatement() {
+        this(null);
+    }
+
+    @Override
+    public String toJs() {
+        return "db." +
+                getCommandName() +
+                "(" +
+                containerName +
+                ");";
+    }
 }

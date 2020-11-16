@@ -1,6 +1,6 @@
 <!--
   #%L
-  Liquibase MongoDB Extension
+  Liquibase CosmosDB Extension
   %%
   Copyright (C) 2020 Mastercard
   %%
@@ -53,11 +53,11 @@
             <ext:document>
                 <!-- @formatter:off -->
                 {
-                "id" : "2",
-                "changedField" : "Will be Changed2",
-                "remainedField" : "Remains Same2",
-                "onlyIn2Field" : "Remains Only2",
-                "partition" : "default"
+                    "id" : "2",
+                    "changedField" : "Will be Changed2",
+                    "remainedField" : "Remains Same2",
+                    "onlyIn2Field" : "Remains Only2",
+                    "partition" : "default"
                 }
                 <!-- @formatter:on -->
             </ext:document>

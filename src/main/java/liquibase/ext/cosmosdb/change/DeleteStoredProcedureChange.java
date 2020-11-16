@@ -23,39 +23,39 @@ package liquibase.ext.cosmosdb.change;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
-import liquibase.ext.cosmosdb.statement.CreateContainerStatement;
+import liquibase.ext.cosmosdb.statement.DeleteStoredProcedureStatement;
 import liquibase.statement.SqlStatement;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
-@DatabaseChange(name = "replaceContainer",
-        description = "Replace container " +
-                "https://docs.microsoft.com/en-us/java/api/com.azure.cosmos.cosmoscontainer.replace?view=azure-java-stable\n" +
-                "https://docs.microsoft.com/en-us/rest/api/cosmos-db/replace-a-collection",
-        priority = ChangeMetaData.PRIORITY_DEFAULT, appliesTo = "container")
+@DatabaseChange(name = "deleteStoredProcedure",
+        description = "Delete Stored Procedure " +
+                "https://docs.microsoft.com/en-us/java/api/com.azure.cosmos.cosmosstoredprocedure.delete?view=azure-java-stable\n" +
+                "https://docs.microsoft.com/en-us/rest/api/cosmos-db/delete-a-stored-procedure",
+        priority = ChangeMetaData.PRIORITY_DEFAULT, appliesTo = "storedProcedure")
 @NoArgsConstructor
 @Getter
 @Setter
-public class ReplaceContainerChange extends AbstractCosmosChange {
+public class DeleteStoredProcedureChange extends AbstractCosmosChange {
 
     private String containerName;
-    private String options;
+    private String procedureProperties;
+    private Boolean skipMissing;
 
     @Override
     public String getConfirmationMessage() {
-        return "Container replaced: " + containerName;
+        return "Stored Procedure deleted for: " + containerName;
     }
 
     @Override
     public SqlStatement[] generateStatements(final Database database) {
 
-        final CreateContainerStatement createContainerStatement
-                = new CreateContainerStatement(containerName, options);
+        final DeleteStoredProcedureStatement deleteStoredProcedureStatement =
+                        new DeleteStoredProcedureStatement(containerName, procedureProperties, skipMissing);
 
         return new SqlStatement[]{
-                createContainerStatement
+                deleteStoredProcedureStatement
         };
     }
 }

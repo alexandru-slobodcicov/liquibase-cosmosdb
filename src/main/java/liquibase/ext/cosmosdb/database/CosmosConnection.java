@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.database;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -33,8 +33,10 @@ import java.util.Properties;
 
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static liquibase.ext.cosmosdb.database.CosmosJsonConnectionString.*;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static liquibase.ext.cosmosdb.database.CosmosConnectionString.ACCOUNT_ENDPOINT_PROPERTY;
+import static liquibase.ext.cosmosdb.database.CosmosConnectionString.ACCOUNT_KEY_PROPERTY;
+import static liquibase.ext.cosmosdb.database.CosmosConnectionString.DATABASE_NAME_PROPERTY;
+import static liquibase.ext.cosmosdb.database.CosmosConnectionString.fromConnectionString;
 
 @Getter
 @Setter
@@ -43,7 +45,7 @@ public class CosmosConnection implements DatabaseConnection {
 
     public static final String LIQUIBASE_EXTENSION_USER_AGENT_SUFFIX = "LiquibaseExtension";
 
-    private CosmosJsonConnectionString cosmosJsonConnectionString;
+    private CosmosConnectionString cosmosConnectionString;
     private CosmosClientProxy cosmosClient;
 
     private CosmosDatabase cosmosDatabase;
@@ -66,7 +68,7 @@ public class CosmosConnection implements DatabaseConnection {
 
     @Override
     public String getCatalog() throws DatabaseException {
-        return this.cosmosJsonConnectionString.getDatabaseName().orElse(EMPTY);
+        return this.cosmosConnectionString.getDatabaseName().orElse("");
     }
 
     @Override
@@ -101,8 +103,8 @@ public class CosmosConnection implements DatabaseConnection {
 
     @Override
     public String getURL() {
-        return ofNullable(cosmosJsonConnectionString)
-                .map(CosmosJsonConnectionString::getConnectionString).orElse(EMPTY);
+        return ofNullable(cosmosConnectionString)
+                .map(CosmosConnectionString::toUrl).orElse("");
     }
 
     @Override
@@ -120,33 +122,20 @@ public class CosmosConnection implements DatabaseConnection {
         //TODO: implementation
     }
 
-    /**
-     * Opens a CosmosConnection based
-     * Creates a new client with the given connection string.
-     * Creates a database if not exists with the DatabaseName passed via {@link CosmosJsonConnectionString#fromJsonConnectionString(String)}
-     *
-     * <p>Note: Intended for driver and library authors to associate extra driver metadata with the connections.</p>
-     *
-     * @param url              connectionString the json format connection string
-     * @param driverObject     driverObject identified
-     * @param driverProperties driverProperties passed through
-     * @see CosmosJsonConnectionString
-     */
-    @Override
-    public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
+    public void open(final CosmosConnectionString cosmosConnectionString, Driver driverObject, Properties driverProperties) throws DatabaseException {
 
-        this.cosmosJsonConnectionString = fromJsonConnectionString(url);
+        this.cosmosConnectionString = cosmosConnectionString;
 
-        if (!cosmosJsonConnectionString.getAccountEndpoint().isPresent()
-                || !cosmosJsonConnectionString.getAccountKey().isPresent()
-                || !cosmosJsonConnectionString.getDatabaseName().isPresent()) {
+        if (!cosmosConnectionString.getAccountEndpoint().isPresent()
+                || !cosmosConnectionString.getAccountKey().isPresent()
+                || !cosmosConnectionString.getDatabaseName().isPresent()) {
             throw new IllegalArgumentException(String.format("Missing one of the properties [%s, %s, %s]"
                     , ACCOUNT_ENDPOINT_PROPERTY, ACCOUNT_KEY_PROPERTY, DATABASE_NAME_PROPERTY));
         }
 
-        this.cosmosClient = ((CosmosClientDriver) driverObject).connect(cosmosJsonConnectionString);
+        this.cosmosClient = ((CosmosClientDriver) driverObject).connect(cosmosConnectionString);
 
-        final String databaseName = cosmosJsonConnectionString.getDatabaseName().get();
+        final String databaseName = cosmosConnectionString.getDatabaseName().get();
 
         try {
             this.cosmosClient.createDatabaseIfNotExists(databaseName);
@@ -154,6 +143,22 @@ public class CosmosConnection implements DatabaseConnection {
         } catch (final Exception e) {
             throw new DatabaseException("Could not create database: " + databaseName, e);
         }
+    }
+
+    /**
+     * Opens a CosmosConnection based
+     * Creates a new client with the given connection string.
+     * Creates a database if not exists with the DatabaseName passed via {@link CosmosConnectionString#fromJsonConnectionString(String)}
+     *
+     * <p>Note: Intended for driver and library authors to associate extra driver metadata with the connections.</p>
+     *
+     * @param url              connectionString the json format connection string
+     * @param driverObject     driverObject identified
+     * @param driverProperties driverProperties passed through
+     * @see CosmosConnectionString
+     */
+    public void open(String url, Driver driverObject, Properties driverProperties) throws DatabaseException {
+        open(fromConnectionString(url), driverObject, driverProperties);
     }
 
     @Override
@@ -169,7 +174,7 @@ public class CosmosConnection implements DatabaseConnection {
     private void reset() {
         this.cosmosClient = null;
         this.cosmosDatabase = null;
-        this.cosmosJsonConnectionString = null;
+        this.cosmosConnectionString = null;
     }
 
     @Override

@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -20,7 +20,9 @@ package liquibase.ext.cosmosdb;
  * #L%
  */
 
+import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.models.CosmosContainerProperties;
+import com.azure.cosmos.models.CosmosStoredProcedureProperties;
 import liquibase.Liquibase;
 import liquibase.ext.cosmosdb.changelog.CosmosRanChangeSet;
 import liquibase.resource.ClassLoaderResourceAccessor;
@@ -32,8 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static liquibase.ext.cosmosdb.persistence.AbstractRepository.DEFAULT_PARTITION_KEY;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static liquibase.ext.cosmosdb.statement.JsonUtils.QUERY_SELECT_ALL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
@@ -43,12 +44,12 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
     @SuppressWarnings("unchecked")
     void testUpdate() {
         final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.generic.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
-        liquibase.update(EMPTY);
+        liquibase.update("");
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName()).read()).isNotNull();
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName()).read()).isNotNull();
         assertThat(cosmosDatabase.readAllContainers().stream().count()).isEqualTo(3);
 
-        final List<Map<String, Object>> ranChangeSets = cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName()).readAllItems(DEFAULT_PARTITION_KEY, Map.class)
+        final List<Map<String, Object>> ranChangeSets = cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName()).queryItems(QUERY_SELECT_ALL, null, Map.class)
                 .stream().map(i -> (Map<String, Object>) i).collect(Collectors.toList());
         assertThat(ranChangeSets).hasSize(2);
         assertThat(ranChangeSets.get(0))
@@ -61,7 +62,7 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
     @Test
     void testUpdateCreateContainer() {
         final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.create-container.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
-        liquibase.update(EMPTY);
+        liquibase.update("");
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName()).read()).isNotNull();
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName()).read()).isNotNull();
 
@@ -81,16 +82,46 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
 
     @SneakyThrows
     @Test
+    void testUpdateCreateProcedure() {
+        final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.create-procedure.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
+        liquibase.update("");
+        assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName()).read()).isNotNull();
+        assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName()).read()).isNotNull();
+
+        final CosmosContainer container = cosmosDatabase.getContainer("procedureContainer1");
+        assertThat(container).isNotNull();
+
+        assertThat(container.getScripts().getStoredProcedure("sproc_1").read().getProperties())
+                .isNotNull()
+                .returns("sproc_1", CosmosStoredProcedureProperties::getId)
+                .returns("function sproc_1() {var context = getContext(); var response = context.getResponse(); response.setBody(1);}",
+                        CosmosStoredProcedureProperties::getBody);
+
+        // TODO: Replace not working fails with IllegalArgumentException: Entity with the specified id does not exist in the system.
+
+        //        assertThat(container.getScripts().getStoredProcedure("sproc_2").read().getProperties())
+        //                .isNotNull()
+        //                .returns("sproc_2", CosmosStoredProcedureProperties::getId)
+        //                .returns("function() sproc_2 {var context = getContext(); var response = context.getResponse(); response.setBody(\"Replaced\");}",
+        //                CosmosStoredProcedureProperties::getBody);
+
+        assertThat(container.getScripts().readAllStoredProcedures().stream().map(CosmosStoredProcedureProperties::getId).anyMatch( p -> p.equals("sproc_3")))
+                .isFalse();
+    }
+
+    @SneakyThrows
+    @Test
     void testUpdateDeleteContainer() {
 
         assertThat(cosmosDatabase.readAllContainers().stream().count()).isEqualTo(0L);
 
         final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.delete-container.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
-        liquibase.update(EMPTY);
+        liquibase.update("");
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName()).read()).isNotNull();
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName()).read()).isNotNull();
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName())
-                .readAllItems(DEFAULT_PARTITION_KEY, Map.class).stream().count()).isEqualTo(2L);
+                .queryItems(QUERY_SELECT_ALL, null, Map.class)
+                .stream().count()).isEqualTo(2L);
 
         assertThat(cosmosDatabase.readAllContainers().stream().map(CosmosContainerProperties::getId).collect(Collectors.toList()))
                 .hasSize(3)
@@ -112,7 +143,7 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .filter(c -> c.getId().equals(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName())).findFirst())
                 .isNotPresent();
 
-        liquibase.update(EMPTY);
+        liquibase.update("");
 
         assertThat(cosmosDatabase.readAllContainers().stream()
                 .filter(c -> c.getId().equals(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName())).findFirst())
@@ -142,7 +173,7 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .filter(c -> c.getId().equals(cosmosLiquibaseDatabase.getDatabaseChangeLogLockTableName())).findFirst())
                 .isPresent();
 
-        liquibase.update(EMPTY);
+        liquibase.update("");
 
         assertThat(cosmosDatabase.readAllContainers().stream()
                 .filter(c -> c.getId().equals(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName())).findFirst())
@@ -169,9 +200,9 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
     @Test
     void testUpdateCreateItem() {
         final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.create-item.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
-        liquibase.update(EMPTY);
+        liquibase.update("");
 
-        Map<?, ?> document = cosmosDatabase.getContainer("container1").readAllItems(DEFAULT_PARTITION_KEY, Map.class)
+        Map<?, ?> document = cosmosDatabase.getContainer("container1").queryItems(QUERY_SELECT_ALL, null, Map.class)
                 .stream().filter(i -> ((Map<?, ?>) i).get("id").equals("1")).findFirst().orElse(null);
 
         assertThat(document).isNotNull();
@@ -192,13 +223,13 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
     @Test
     void testUpdateUpsertItem() {
         final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.upsert-item.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
-        liquibase.update(EMPTY);
+        liquibase.update("");
 
         // createContainer, createItem, upsertItem = 3 rows in log
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName())
-                .readAllItems(DEFAULT_PARTITION_KEY, Map.class).stream().count()).isEqualTo(3L);
+                .queryItems(QUERY_SELECT_ALL, null, Map.class).stream().count()).isEqualTo(3L);
 
-        Map<?, ?> document = cosmosDatabase.getContainer("container1").readAllItems(DEFAULT_PARTITION_KEY, Map.class)
+        Map<?, ?> document = cosmosDatabase.getContainer("container1").queryItems(QUERY_SELECT_ALL, null, Map.class)
                 .stream().filter(i -> ((Map<?, ?>) i).get("id").equals("1")).findFirst().orElse(null);
 
         assertThat(document).isNotNull();
@@ -215,13 +246,13 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
     @SuppressWarnings("unchecked")
     void testUpdateUpdateEachItem() {
         final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.update-each-item.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
-        liquibase.update(EMPTY);
+        liquibase.update("");
 
         // createContainer, createItem, upsertItem = 3 rows in log
         assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName())
-                .readAllItems(DEFAULT_PARTITION_KEY, Map.class).stream().count()).isEqualTo(4L);
+                .queryItems(QUERY_SELECT_ALL, null, Map.class).stream().count()).isEqualTo(4L);
 
-        Map<String, ?> document = cosmosDatabase.getContainer("container1").readAllItems(DEFAULT_PARTITION_KEY, Map.class)
+        Map<String, ?> document = cosmosDatabase.getContainer("container1").queryItems(QUERY_SELECT_ALL, null, Map.class)
                 .stream().filter(i -> ((Map<String, ?>) i).get("id").equals("1")).findFirst().orElse(null);
 
         assertThat(document).isNotNull()
@@ -234,7 +265,7 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .hasFieldOrPropertyWithValue("addedField", "Added Value")
                 .hasFieldOrPropertyWithValue("partition", "default");
 
-        document = cosmosDatabase.getContainer("container1").readAllItems(DEFAULT_PARTITION_KEY, Map.class)
+        document = cosmosDatabase.getContainer("container1").queryItems(QUERY_SELECT_ALL, null, Map.class)
                 .stream().filter(i -> ((Map<String, ?>) i).get("id").equals("2")).findFirst().orElse(null);
 
         assertThat(document).isNotNull()
@@ -247,7 +278,7 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .hasFieldOrPropertyWithValue("addedField", "Added Value")
                 .hasFieldOrPropertyWithValue("partition", "default");
 
-        document = cosmosDatabase.getContainer("container1").readAllItems(DEFAULT_PARTITION_KEY, Map.class)
+        document = cosmosDatabase.getContainer("container1").queryItems(QUERY_SELECT_ALL, null, Map.class)
                 .stream().filter(i -> ((Map<String, ?>) i).get("id").equals("3")).findFirst().orElse(null);
 
         assertThat(document).isNotNull()
@@ -259,6 +290,25 @@ class CosmosLiquibaseIT extends AbstractCosmosWithConnectionIntegrationTest {
                 .doesNotContainKey("onlyIn2Field")
                 .doesNotContainKey("addedField")
                 .hasFieldOrPropertyWithValue("partition", "default");
+    }
+
+    @SneakyThrows
+    @Test
+    @SuppressWarnings("unchecked")
+    void testUpdateDeleteEachItem() {
+        final Liquibase liquibase = new Liquibase("liquibase/ext/changelog.delete-each-item.test.xml", new ClassLoaderResourceAccessor(), cosmosLiquibaseDatabase);
+        liquibase.update("");
+
+        // createContainer, createItem, upsertItem = 3 rows in log
+        assertThat(cosmosDatabase.getContainer(cosmosLiquibaseDatabase.getDatabaseChangeLogTableName())
+                .queryItems(QUERY_SELECT_ALL, null, Map.class).stream().count()).isEqualTo(3L);
+
+        List<Map<String, ?>> documents = cosmosDatabase.getContainer("deleteEachContainer1").queryItems(QUERY_SELECT_ALL, null, Map.class)
+                .stream().map(d->(Map<String, ?>)d).collect(Collectors.toList());
+
+        assertThat(documents).hasSize(1).first()
+                .returns("2", d->d.get("id"))
+                .returns("Not To Be Deleted", d->d.get("name"));
     }
 
     @Test

@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class DeleteCurrentDatabaseStatement extends AbstractNoSqlStatement implements NoSqlExecuteStatement{
+public class DeleteCurrentDatabaseStatement extends AbstractNoSqlStatement implements NoSqlExecuteStatement {
 
     public static final String COMMAND_NAME = "delete";
 

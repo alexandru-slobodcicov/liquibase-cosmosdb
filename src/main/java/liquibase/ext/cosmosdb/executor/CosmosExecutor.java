@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.executor;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -42,14 +42,11 @@ import static java.util.Collections.emptyList;
 import static liquibase.servicelocator.PrioritizedService.PRIORITY_DATABASE;
 
 @LiquibaseService
+@NoArgsConstructor()
 public class CosmosExecutor extends AbstractExecutor {
 
     public static final String COSMOS_EXECUTOR_NAME = "jdbc";
     private final Logger log = Scope.getCurrentScope().getLog(getClass());
-
-    public CosmosExecutor() {
-        super();
-    }
 
     @Getter
     @Setter

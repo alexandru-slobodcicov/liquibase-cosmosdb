@@ -22,50 +22,39 @@ package liquibase.ext.cosmosdb.statement;
 
 import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.CosmosDatabase;
-import com.azure.cosmos.implementation.Document;
 import com.azure.cosmos.models.SqlQuerySpec;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static liquibase.ext.cosmosdb.statement.JsonUtils.orEmptySqlQuerySpec;
+import static liquibase.ext.cosmosdb.statement.JsonUtils.*;
 
-public class UpdateEachItemStatement extends CreateItemStatement{
+public class DeleteEachItemStatement extends AbstractNoSqlContainerStatement implements NoSqlExecuteStatement {
 
-    public static final String COMMAND_NAME = "updateEachItem";
+    public static final String COMMAND_NAME = "deleteEachItem";
 
     private final SqlQuerySpec query;
 
-    public UpdateEachItemStatement(final String containerName, final String jsonQuery, final String jsonDocument) {
-        super(containerName, jsonDocument);
+    public DeleteEachItemStatement(final String containerName, final String jsonQuery) {
+        super(containerName);
         this.query = orEmptySqlQuerySpec(jsonQuery);
     }
 
-    public UpdateEachItemStatement(final String containerName, final SqlQuerySpec query, final Document document) {
-        super(containerName, document);
+    public DeleteEachItemStatement(final String containerName, final SqlQuerySpec query) {
+        super(containerName);
         this.query = query;
     }
 
-    public UpdateEachItemStatement() {
-        this(null, (SqlQuerySpec)null, null);
+    public DeleteEachItemStatement() {
+        this(null, (String)null);
     }
 
     @Override
     public void execute(final CosmosDatabase cosmosDatabase) {
         final CosmosContainer cosmosContainer = cosmosDatabase.getContainer(containerName);
 
-        final Document source = getDocument();
-
-        final List<Document> documents = cosmosContainer
-                .queryItems(query, null, Map.class).stream().map(JsonUtils::fromMap)
-                .map(Document.class::cast).map(d -> JsonUtils.mergeDocuments(d, source))
-                .collect(Collectors.toList());
-
-        documents.forEach(destination -> {
-            JsonUtils.mergeDocuments(source, destination);
-            cosmosContainer.upsertItem(destination);
-        });
+        //TODO: Test with partitions, not clear which one will be deleted
+        cosmosContainer.queryItems(query, null, Map.class).stream()
+                .forEach(d -> cosmosContainer.deleteItem((String) d.get(COSMOS_ID_FIELD), DEFAULT_PARTITION_KEY_PERSIST,null));
     }
 
     @Override

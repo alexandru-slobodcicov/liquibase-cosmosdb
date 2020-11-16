@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.statement;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -20,16 +20,18 @@ package liquibase.ext.cosmosdb.statement;
  * #L%
  */
 
+import com.azure.cosmos.implementation.DocumentCollection;
 import com.azure.cosmos.implementation.JsonSerializable;
 import com.azure.cosmos.implementation.Utils;
-import com.azure.cosmos.models.SqlParameter;
-import com.azure.cosmos.models.SqlQuerySpec;
+import com.azure.cosmos.models.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import liquibase.util.StringUtil;
 import lombok.NoArgsConstructor;
 import com.azure.cosmos.implementation.Document;
 
 import java.util.Map;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static liquibase.util.StringUtil.trimToNull;
 import static lombok.AccessLevel.PRIVATE;
@@ -37,8 +39,13 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 public final class JsonUtils {
     public static final ObjectMapper OBJECT_MAPPER = Utils.getSimpleObjectMapper();
-
-
+    public static final String DEFAULT_PARTITION_KEY_NAME = "null";
+    public static final String DEFAULT_PARTITION_KEY_PATH = "/" + DEFAULT_PARTITION_KEY_NAME;
+    public static final PartitionKey DEFAULT_PARTITION_KEY = new PartitionKey("default");
+    public static final PartitionKey DEFAULT_PARTITION_KEY_PERSIST = PartitionKey.NONE;
+    public static final String COSMOS_ID_FIELD = "id";
+    public static final String COSMOS_ID_PARAMETER = "@" + COSMOS_ID_FIELD;
+    public static final String QUERY_SELECT_ALL = "SELECT * FROM c";
 
     public static Document orEmptyDocument(final String json) {
         return ofNullable(trimToNull(json)).map(Document::new)
@@ -63,6 +70,21 @@ public final class JsonUtils {
                 }).orElseGet(SqlQuerySpec::new);
     }
 
+    /**
+     * Deserialize the json to Stored Procedure parameters.
+     *
+     * @param json the Stored Procedure in json format.
+     *             See request body: https://docs.microsoft.com/en-us/rest/api/cosmos-db/create-a-stored-procedure.
+     * @return the {@link CosmosStoredProcedureProperties}.
+     */
+    public static CosmosStoredProcedureProperties orEmptyStoredProcedureProperties(final String json) {
+
+        return ofNullable(trimToNull(json)).map(JsonSerializable::new)
+                .map(js -> new CosmosStoredProcedureProperties(
+                 js.getString("id"),
+                js.getString("body"))).orElse(new CosmosStoredProcedureProperties(null, null));
+    }
+
     public static Document fromMap(final Map<?, ?> source) {
         return Document.fromObject(source, OBJECT_MAPPER);
     }
@@ -72,4 +94,30 @@ public final class JsonUtils {
         return destination;
     }
 
+    public static CosmosContainerProperties toContainerProperties(final String containerName, final String optionsJson) {
+
+        final CosmosContainerProperties cosmosContainerProperties = new CosmosContainerProperties(containerName, DEFAULT_PARTITION_KEY_PATH);
+        if (StringUtil.isNotEmpty(StringUtil.trimToNull(optionsJson))) {
+            final DocumentCollection documentCollection = new DocumentCollection(optionsJson);
+            if(nonNull(documentCollection.getPartitionKey())) {
+                cosmosContainerProperties.setPartitionKeyDefinition(documentCollection.getPartitionKey());
+            }
+            if(nonNull(documentCollection.getIndexingPolicy())) {
+                cosmosContainerProperties.setIndexingPolicy(documentCollection.getIndexingPolicy());
+            }
+            if(nonNull(documentCollection.getUniqueKeyPolicy())) {
+                cosmosContainerProperties.setUniqueKeyPolicy(documentCollection.getUniqueKeyPolicy());
+            }
+            if(nonNull(documentCollection.getAnalyticalStoreTimeToLiveInSeconds())) {
+                cosmosContainerProperties.setAnalyticalStoreTimeToLiveInSeconds(documentCollection.getAnalyticalStoreTimeToLiveInSeconds());
+            }
+            if(nonNull(documentCollection.getDefaultTimeToLive())) {
+                cosmosContainerProperties.setDefaultTimeToLiveInSeconds(documentCollection.getDefaultTimeToLive());
+            }
+            if(nonNull(documentCollection.getConflictResolutionPolicy())) {
+                cosmosContainerProperties.setConflictResolutionPolicy(documentCollection.getConflictResolutionPolicy());
+            }
+        }
+        return cosmosContainerProperties;
+    }
 }

@@ -2,9 +2,9 @@ package liquibase.ext.cosmosdb.lockservice;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
- * Copyright (C) 2019 Mastercard
+ * Copyright (C) 2020 Mastercard
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package liquibase.ext.cosmosdb.lockservice;
 import com.azure.cosmos.implementation.DocumentCollection;
 import liquibase.ext.cosmosdb.changelog.CreateChangeLogContainerStatement;
 import liquibase.ext.cosmosdb.statement.CreateContainerStatement;
+import liquibase.ext.cosmosdb.statement.JsonUtils;
 
 public class CreateChangeLogLockContainerStatement extends CreateContainerStatement {
 
@@ -52,12 +53,9 @@ public class CreateChangeLogLockContainerStatement extends CreateContainerStatem
             "  \"partitionKey\": {  \n" +
             "    \"paths\": [  \n" +
             "      \"%s\"  \n" +
-            "    ],  \n" +
-            "    \"kind\": \"Hash\",\n" +
-            "     \"Version\": 2\n" +
-            "\n" +
+            "    ]  \n" +
             "  }  \n" +
-            "}  ", DEFAULT_PARTITION_KEY_PATH);
+            "}  ", JsonUtils.DEFAULT_PARTITION_KEY_PATH);
 
     public CreateChangeLogLockContainerStatement(final String collectionName) {
         super(collectionName, OPTIONS);

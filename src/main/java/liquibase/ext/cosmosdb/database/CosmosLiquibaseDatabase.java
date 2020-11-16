@@ -2,7 +2,7 @@ package liquibase.ext.cosmosdb.database;
 
 /*-
  * #%L
- * Liquibase MongoDB Extension
+ * Liquibase CosmosDB Extension
  * %%
  * Copyright (C) 2020 Mastercard
  * %%
@@ -411,7 +411,7 @@ public class CosmosLiquibaseDatabase extends AbstractJdbcDatabase {
 
     @Override
     public String getDefaultDriver(final String url) {
-        if (url.startsWith(CosmosJsonConnectionString.COSMOSDB_PREFIX)) {
+        if (url.startsWith(CosmosConnectionString.COSMOSDB_PREFIX)) {
             return CosmosClientDriver.class.getName();
         }
         return null;
