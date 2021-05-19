@@ -29,7 +29,8 @@ public abstract class AbstractRepository<T> {
 
         final SqlQuerySpec querySpec
                 = new SqlQuerySpec("SELECT * FROM c WHERE c.id=" + JsonUtils.COSMOS_ID_PARAMETER, new SqlParameter(JsonUtils.COSMOS_ID_PARAMETER, id));
-        return container.queryItems(querySpec, null, Map.class).stream().findFirst().map(converter::fromDocument);
+        //return container.queryItems(querySpec, null, Map.class).stream().findFirst().map(converter::fromDocument);
+        return container.queryItems(querySpec, null, Map.class).stream().findFirst().map(map -> (T) converter.fromDocument(map));
     }
 
     public List<T> getAll() {
