@@ -20,9 +20,8 @@ package liquibase.nosql.lockservice;
  * #L%
  */
 
+import liquibase.GlobalConfiguration;
 import liquibase.Scope;
-import liquibase.configuration.GlobalConfiguration;
-import liquibase.configuration.LiquibaseConfiguration;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LockException;
@@ -272,10 +271,7 @@ public abstract class AbstractNoSqlLockService<D extends AbstractNoSqlDatabase> 
         if (changeLogLockRecheckTime != null) {
             return changeLogLockRecheckTime;
         }
-        return LiquibaseConfiguration
-                .getInstance()
-                .getConfiguration(GlobalConfiguration.class)
-                .getDatabaseChangeLogLockPollRate();
+        return GlobalConfiguration.CHANGELOGLOCK_POLL_RATE.getCurrentValue();
     }
 
     @Override
@@ -287,10 +283,7 @@ public abstract class AbstractNoSqlLockService<D extends AbstractNoSqlDatabase> 
         if (changeLogLockPollRate != null) {
             return changeLogLockPollRate;
         }
-        return LiquibaseConfiguration
-                .getInstance()
-                .getConfiguration(GlobalConfiguration.class)
-                .getDatabaseChangeLogLockWaitTime();
+        return GlobalConfiguration.CHANGELOGLOCK_WAIT_TIME.getCurrentValue();
     }
 
     @Override
