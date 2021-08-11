@@ -23,6 +23,7 @@ package liquibase.ext.cosmosdb.database;
 import com.azure.cosmos.CosmosDatabase;
 import liquibase.exception.DatabaseException;
 import liquibase.nosql.database.AbstractNoSqlConnection;
+import liquibase.util.StringUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,10 +33,7 @@ import java.util.Properties;
 
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static liquibase.ext.cosmosdb.database.CosmosConnectionString.ACCOUNT_ENDPOINT_PROPERTY;
-import static liquibase.ext.cosmosdb.database.CosmosConnectionString.ACCOUNT_KEY_PROPERTY;
-import static liquibase.ext.cosmosdb.database.CosmosConnectionString.DATABASE_NAME_PROPERTY;
-import static liquibase.ext.cosmosdb.database.CosmosConnectionString.fromConnectionString;
+import static liquibase.ext.cosmosdb.database.CosmosConnectionString.*;
 
 @Getter
 @Setter
@@ -134,6 +132,11 @@ public class CosmosConnection extends AbstractNoSqlConnection {
         } catch (final Exception e) {
             throw new DatabaseException("Could not create database: " + databaseName, e);
         }
+    }
+
+    @Override
+    public boolean supports(String url) {
+        return !StringUtil.isEmpty(StringUtil.trimToNull(url)) && url.startsWith(COSMOSDB_PREFIX);
     }
 
     @Override
