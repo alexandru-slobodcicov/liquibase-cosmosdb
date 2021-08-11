@@ -25,6 +25,7 @@ import liquibase.changelog.ChangeLogHistoryServiceFactory;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.executor.AbstractExecutor;
+import liquibase.ext.cosmosdb.database.CosmosLiquibaseDatabase;
 import liquibase.logging.Logger;
 import liquibase.nosql.changelog.AbstractNoSqlHistoryService;
 import liquibase.nosql.database.AbstractNoSqlConnection;
@@ -66,6 +67,11 @@ public class NoSqlExecutor extends AbstractExecutor {
     @Override
     public String getName() {
         return EXECUTOR_NAME;
+    }
+
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof CosmosLiquibaseDatabase;
     }
 
     @Override
