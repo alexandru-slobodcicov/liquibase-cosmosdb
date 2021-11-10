@@ -28,7 +28,6 @@ import liquibase.ext.cosmosdb.database.CosmosLiquibaseDatabase;
 import liquibase.parser.ChangeLogParser;
 import liquibase.parser.ChangeLogParserFactory;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.util.file.FilenameUtils;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -59,10 +58,40 @@ public final class TestUtils {
     public static List<ChangeSet> getChangeSets(final String changeSetPath, final CosmosLiquibaseDatabase database) throws LiquibaseException {
         final ClassLoaderResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor();
         final ChangeLogParser parser =
-            ChangeLogParserFactory.getInstance().getParser(FilenameUtils.getExtension(changeSetPath), resourceAccessor);
+            ChangeLogParserFactory.getInstance().getParser(getExtension(changeSetPath), resourceAccessor);
 
         final DatabaseChangeLog changeLog =
             parser.parse(changeSetPath, new ChangeLogParameters(database), resourceAccessor);
         return changeLog.getChangeSets();
+    }
+
+    public static String getExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int index = indexOfExtension(filename);
+        if (index == -1) {
+            return "";
+        } else {
+            return filename.substring(index + 1);
+        }
+    }
+
+    public static int indexOfExtension(String filename) {
+        if (filename == null) {
+            return -1;
+        }
+        int extensionPos = filename.lastIndexOf(".");
+        int lastSeparator = indexOfLastSeparator(filename);
+        return ((lastSeparator > extensionPos) ? -1 : extensionPos);
+    }
+
+    public static int indexOfLastSeparator(String filename) {
+        if (filename == null) {
+            return -1;
+        }
+        int lastUnixPos = filename.lastIndexOf('/');
+        int lastWindowsPos = filename.lastIndexOf('/');
+        return Math.max(lastUnixPos, lastWindowsPos);
     }
 }
