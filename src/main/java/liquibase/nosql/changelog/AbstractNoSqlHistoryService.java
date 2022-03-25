@@ -244,7 +244,7 @@ public abstract class AbstractNoSqlHistoryService<D extends AbstractNoSqlDatabas
     public void clearAllCheckSums() throws DatabaseException {
         getLogger().info("Clear all checksums");
 
-        clearChekSums();
+        clearCheckSums();
 
         getLogger().info("Clear all checksums executed");
     }
@@ -285,7 +285,7 @@ public abstract class AbstractNoSqlHistoryService<D extends AbstractNoSqlDatabas
 
     protected abstract void removeRanChangeSet(ChangeSet changeSet) throws DatabaseException;
 
-    protected abstract void clearChekSums() throws DatabaseException;
+    protected abstract void clearCheckSums() throws DatabaseException;
 
     protected abstract long countTags(String tag) throws DatabaseException;
 

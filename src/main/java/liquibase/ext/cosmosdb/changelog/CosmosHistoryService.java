@@ -31,10 +31,13 @@ import liquibase.ext.cosmosdb.database.CosmosLiquibaseDatabase;
 import liquibase.ext.cosmosdb.statement.CountContainersByNameStatement;
 import liquibase.ext.cosmosdb.statement.CountDocumentsInContainerStatement;
 import liquibase.ext.cosmosdb.statement.DeleteContainerStatement;
+import liquibase.ext.cosmosdb.statement.DeleteEachItemStatement;
 import liquibase.logging.Logger;
 import liquibase.nosql.changelog.AbstractNoSqlHistoryService;
 import liquibase.nosql.executor.NoSqlExecutor;
 import liquibase.util.StringUtil;
+
+import com.azure.cosmos.models.SqlQuerySpec;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -124,11 +127,19 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     @Override
     protected void removeRanChangeSet(final ChangeSet changeSet) throws DatabaseException {
-        //TODO: Implement
+        /*String jsonQuery = "{\n" +
+            "\"query\" : \"SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"\"" +
+            "}";
+            */
+        String query = "SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"";
+        SqlQuerySpec querySpec = new SqlQuerySpec(query);
+        getExecutor().execute(
+            new DeleteEachItemStatement(getDatabaseChangeLogTableName(), 
+            querySpec));
     }
 
     @Override
-    protected void clearChekSums() throws DatabaseException {
+    protected void clearCheckSums() throws DatabaseException {
         //TODO: Implement
     }
 
