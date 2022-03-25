@@ -24,6 +24,7 @@ import liquibase.Scope;
 import liquibase.change.Change;
 import liquibase.change.core.TagDatabaseChange;
 import liquibase.changelog.ChangeSet;
+import liquibase.ext.cosmosdb.changelog.CosmosRanChangeSet;
 import liquibase.changelog.RanChangeSet;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
@@ -32,11 +33,13 @@ import liquibase.ext.cosmosdb.statement.CountContainersByNameStatement;
 import liquibase.ext.cosmosdb.statement.CountDocumentsInContainerStatement;
 import liquibase.ext.cosmosdb.statement.DeleteContainerStatement;
 import liquibase.ext.cosmosdb.statement.DeleteEachItemStatement;
+import liquibase.ext.cosmosdb.statement.UpdateEachItemStatement;
 import liquibase.logging.Logger;
 import liquibase.nosql.changelog.AbstractNoSqlHistoryService;
 import liquibase.nosql.executor.NoSqlExecutor;
 import liquibase.util.StringUtil;
 
+import com.azure.cosmos.implementation.Document;
 import com.azure.cosmos.models.SqlQuerySpec;
 
 import java.util.List;
@@ -127,10 +130,6 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     @Override
     protected void removeRanChangeSet(final ChangeSet changeSet) throws DatabaseException {
-        /*String jsonQuery = "{\n" +
-            "\"query\" : \"SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"\"" +
-            "}";
-            */
         String query = "SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"";
         SqlQuerySpec querySpec = new SqlQuerySpec(query);
         getExecutor().execute(
@@ -141,6 +140,17 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
     @Override
     protected void clearCheckSums() throws DatabaseException {
         //TODO: Implement
+        String query = "SELECT * FROM c";
+        //Nullify each md5sum field
+        String docString = "{\n" +
+            "\"" + CosmosRanChangeSet.Fields.LAST_CHECK_SUM + "\"" + " : null\n" +
+        "}";
+        Document doc = new Document(docString);
+        SqlQuerySpec querySpec = new SqlQuerySpec(query);
+        getExecutor().execute(
+            new UpdateEachItemStatement(getDatabaseChangeLogTableName(), 
+            querySpec,
+            doc));
     }
 
     @Override
