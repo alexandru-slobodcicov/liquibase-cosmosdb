@@ -174,12 +174,12 @@ cosmosdb://{"accountEndpoint" : "https://localhost:8080",
             "databaseName" : "testdb1"}
 ```
 
-#### Mongo URL like after the prefix 
+#### CosmosDB URL like after the prefix 
 
 ```url
 cosmosdb://[host]:[accountKey]@[host]:[port]/[databaseName]?[Query Parameters]
 ```
-so a mongo like url looks like:
+so a CosmosDB like url looks like:
 ```url
 cosmosdb://localhost:C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==@localhost:8080/testdb1
 ```
