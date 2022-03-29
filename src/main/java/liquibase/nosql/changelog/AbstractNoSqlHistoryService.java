@@ -213,6 +213,7 @@ public abstract class AbstractNoSqlHistoryService<D extends AbstractNoSqlDatabas
      */
     @Override
     public void tag(final String tagString) throws DatabaseException {
+        getLogger().fine(getClass().getSimpleName() + " tag Method: with tagString: " + tagString);
         final long totalRows = countRanChangeSets();
         if (totalRows == 0L) {
             final ChangeSet emptyChangeSet = new ChangeSet(String.valueOf(new Date().getTime()), "liquibase",
