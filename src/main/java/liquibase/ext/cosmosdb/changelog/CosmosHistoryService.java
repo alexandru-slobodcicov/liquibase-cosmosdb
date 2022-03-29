@@ -63,17 +63,20 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     @Override
     public boolean supports(final Database database) {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " supports()");
         return CosmosLiquibaseDatabase.COSMOSDB_PRODUCT_NAME.equals(database.getDatabaseProductName());
     }
 
     @Override
     protected Boolean existsRepository() throws DatabaseException {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " existsRepository()");
         return getExecutor().queryForLong(
                 new CountContainersByNameStatement(this.getDatabaseChangeLogTableName())) == 1L;
     }
 
     @Override
     protected void createRepository() throws DatabaseException {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " createRepository()");
         final CreateChangeLogContainerStatement createChangeLogContainerStatement =
                 new CreateChangeLogContainerStatement(this.getDatabaseChangeLogTableName());
         getExecutor().execute(createChangeLogContainerStatement);
@@ -87,26 +90,28 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     @Override
     protected void dropRepository() throws DatabaseException {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " dropRepository()");
         getExecutor().execute(
                 new DeleteContainerStatement(getDatabaseChangeLogTableName()));
     }
 
     @Override
     protected List<RanChangeSet> queryRanChangeSets() throws DatabaseException {
-
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " queryRanChangeSets()");
         return getExecutor().queryForList(new SelectChangeLogRanChangeSetsStatement(getDatabaseChangeLogTableName()), RanChangeSet.class)
                 .stream().map(RanChangeSet.class::cast).collect(Collectors.toList());
     }
 
     @Override
     protected Integer generateNextSequence() throws DatabaseException {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " generateNextSequence()");
         return (int) getExecutor().queryForLong(new GetNextChangeSetSequenceValueStatement(getDatabaseChangeLogTableName()));
     }
 
     @Override
     protected void markChangeSetRun(final ChangeSet changeSet, final ChangeSet.ExecType execType, final Integer nextSequenceValue)
             throws DatabaseException {
-
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " markChangeSetRun(cs,et,nxtseq)");
         final NoSqlExecutor executor = getExecutor();
 
         final MarkChangeSetRanStatement markChangeSetRanStatement =
@@ -118,6 +123,7 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     //TODO: Raise with Liquibase to make it as part of ChangeSet class
     public String extractTag(final ChangeSet changeSet) {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " extractTag(changeSet)");
         String tag = null;
         for (Change change : changeSet.getChanges()) {
             if (change instanceof TagDatabaseChange) {
@@ -130,6 +136,7 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     @Override
     protected void removeRanChangeSet(final ChangeSet changeSet) throws DatabaseException {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " removeRanChangeSet(changeSet)");
         String query = "SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"";
         SqlQuerySpec querySpec = new SqlQuerySpec(query);
         getExecutor().execute(
@@ -139,7 +146,7 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     @Override
     protected void clearCheckSums() throws DatabaseException {
-        //TODO: Implement
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " clearCheckSums()");
         String query = "SELECT * FROM c";
         //Nullify each md5sum field
         String docString = "{\n" +
@@ -155,22 +162,44 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
 
     @Override
     protected long countTags(final String tag) throws DatabaseException {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " countTags(tag)");
         //TODO: Implement
         return 0;
     }
 
     @Override
     protected void tagLast(final String tagString) throws DatabaseException {
-        //TODO: Implement
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " tagLast(tag)");
+        String query = "SELECT TOP 1 * FROM c order by c.dateExecuted DESC";
+        SqlQuerySpec querySpec = new SqlQuerySpec(query);
+        String docString = "{\n" +
+            "\"" + CosmosRanChangeSet.Fields.TAG + "\"" + " : \"" + tagString + "\"\n" +
+        "}";
+        Document doc = new Document(docString);
+        getExecutor().execute(
+            new UpdateEachItemStatement(getDatabaseChangeLogTableName(), 
+            querySpec,
+            doc));
     }
 
     @Override
     protected long countRanChangeSets() throws DatabaseException {
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " countRanChangeSets()");
         return getExecutor().queryForLong(new CountDocumentsInContainerStatement(getDatabaseChangeLogTableName()));
     }
 
     @Override
     protected void updateCheckSum(final ChangeSet changeSet) throws DatabaseException {
-        //TODO: Implement
+        getLogger().fine("Entering: " + getClass().getSimpleName() + " updateCheckSum(changeSet)");
+        String query = "SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"";
+        SqlQuerySpec querySpec = new SqlQuerySpec(query);
+        String docString = "{\n" +
+            "\"" + CosmosRanChangeSet.Fields.LAST_CHECK_SUM + "\"" + " : \"" + changeSet.generateCheckSum() + "\"\n" +
+        "}";
+        Document doc = new Document(docString);
+        getExecutor().execute(
+            new UpdateEachItemStatement(getDatabaseChangeLogTableName(), 
+            querySpec,
+            doc));
     }
 }
