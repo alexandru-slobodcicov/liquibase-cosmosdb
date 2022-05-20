@@ -53,7 +53,7 @@ public class ReplaceContainerChange extends AbstractCosmosChange {
     @Override
     public SqlStatement[] generateStatements(final Database database) {
 
-        final CreateContainerStatement createContainerStatement
+        final ReplaceContainerStatement createContainerStatement
                 = new ReplaceContainerStatement(containerId, containerProperties, throughputProperties);
 
         return new SqlStatement[]{

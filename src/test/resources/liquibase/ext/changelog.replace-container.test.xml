@@ -26,8 +26,9 @@
 
     <changeSet id="0" author="alex">
 
-        <ext:createContainer containerId="minimal"/>
-
+        <ext:createContainer containerId="minimal">
+          <ext:throughputProperties>400</ext:throughputProperties>
+        </ext:createContainer>
         <ext:createContainer containerId="maximal">
 
             <ext:containerProperties>
