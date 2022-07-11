@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static com.azure.cosmos.implementation.Constants.Properties.ID;
 import static java.util.Optional.ofNullable;
-import static liquibase.sqlgenerator.core.MarkChangeSetRanGenerator.*;
+
 
 public class ChangeSetToDocumentConverter extends AbstractItemToDocumentConverter<CosmosRanChangeSet, Map<String, Object>> {
 

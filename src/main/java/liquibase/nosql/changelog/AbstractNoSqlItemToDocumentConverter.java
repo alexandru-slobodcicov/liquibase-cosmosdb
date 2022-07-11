@@ -5,13 +5,15 @@ import liquibase.Labels;
 
 import java.util.Collection;
 
-import static liquibase.sqlgenerator.core.MarkChangeSetRanGenerator.AND;
-import static liquibase.sqlgenerator.core.MarkChangeSetRanGenerator.CLOSE_BRACKET;
-import static liquibase.sqlgenerator.core.MarkChangeSetRanGenerator.COMMA;
-import static liquibase.sqlgenerator.core.MarkChangeSetRanGenerator.OPEN_BRACKET;
-import static liquibase.sqlgenerator.core.MarkChangeSetRanGenerator.WHITESPACE;
+
 
 public abstract class AbstractNoSqlItemToDocumentConverter<I, D>  {
+
+    public static final String AND = " AND ";
+    public static final String COMMA = ",";
+    public static final String WHITESPACE = " ";
+    public static final String OPEN_BRACKET = "(";
+    public static final String CLOSE_BRACKET = ")";
 
     public abstract D toDocument(I item);
 
