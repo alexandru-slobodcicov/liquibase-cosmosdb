@@ -104,7 +104,7 @@ public class MarkChangeSetRanStatement extends AbstractCosmosContainerStatement
                         , changeSet.getDescription()
                         , changeSet.getComments()
                         , changeSet.getContexts()
-                        , changeSet.getInheritableContexts()
+                        , changeSet.getInheritableContextFilter()
                         , changeSet.getLabels()
                         , deploymentId
                         , orderExecuted
