@@ -34,8 +34,13 @@ public class CosmosClientDriver implements Driver {
                     .userAgentSuffix(LIQUIBASE_EXTENSION_USER_AGENT_SUFFIX)
                     .buildClient();
         } catch (final Exception e) {
-            throw new DatabaseException("Connection could not be established to: "
-                    + cosmosConnectionString.getConnectionString(), e);
+            final String message = String.format(
+                    "Connection could not be established to endpoint: %s, database: %s",
+                    cosmosConnectionString.getAccountEndpoint(),
+                    cosmosConnectionString.getDatabaseName()
+            );
+
+            throw new DatabaseException(message, e);
         }
         return CosmosClientProxy.builder().cosmosClient(client).build();
     }
