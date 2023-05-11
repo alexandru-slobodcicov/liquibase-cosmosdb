@@ -62,7 +62,7 @@ class CreateContainerChangeTest extends AbstractCosmosChangeTest {
                 .isNotNull()
                 .hasSize(2);
 
-        assertThat(changeSets.get(0).generateCheckSum()).isEqualTo(CheckSum.parse("8:f9a902bc0f602d3c8f0ce07ebd8bb90b"));
+        assertThat(changeSets.get(0).generateCheckSum()).isEqualTo(CheckSum.parse("9:5fa50d36ca8df93adfa7c3420cbb7e1f"));
         assertThat(changeSets.get(0).getChanges())
                 .hasSize(5)
                 .hasOnlyElementsOfType(CreateContainerChange.class)
