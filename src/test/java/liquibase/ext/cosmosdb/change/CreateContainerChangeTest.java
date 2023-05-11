@@ -72,14 +72,14 @@ class CreateContainerChangeTest extends AbstractCosmosChangeTest {
                         Change::generateCheckSum, c -> c.generateStatements(database).length, c -> c.generateStatements(database)[0].getClass()
                 )
                 .containsExactly(
-                        tuple("minimal", null, null, null, CheckSum.parse("8:093e2225953ad4686ca0a89eeabc47ba"), 1, CreateContainerStatement.class),
-                        tuple("minimal", TRUE, null, null, CheckSum.parse("8:adad58b87e2ef854fd678f0b03565dfe"), 1, CreateContainerStatement.class),
-                        tuple("skipExisting", TRUE, null, null, CheckSum.parse("8:614e03910b2faf3e6983c894738a726a"), 1, CreateContainerStatement.class),
-                        tuple("skipExisting", TRUE, null, null, CheckSum.parse("8:614e03910b2faf3e6983c894738a726a"), 1, CreateContainerStatement.class),
-                        tuple("notSkipExisting", FALSE, null, null, CheckSum.parse("8:4b491837aa994bfab8801672021d47f6"), 1, CreateContainerStatement.class)
+                        tuple("minimal", null, null, null, CheckSum.parse("9:093e2225953ad4686ca0a89eeabc47ba"), 1, CreateContainerStatement.class),
+                        tuple("minimal", TRUE, null, null, CheckSum.parse("9:adad58b87e2ef854fd678f0b03565dfe"), 1, CreateContainerStatement.class),
+                        tuple("skipExisting", TRUE, null, null, CheckSum.parse("9:614e03910b2faf3e6983c894738a726a"), 1, CreateContainerStatement.class),
+                        tuple("skipExisting", TRUE, null, null, CheckSum.parse("9:614e03910b2faf3e6983c894738a726a"), 1, CreateContainerStatement.class),
+                        tuple("notSkipExisting", FALSE, null, null, CheckSum.parse("9:4b491837aa994bfab8801672021d47f6"), 1, CreateContainerStatement.class)
                 );
 
-        assertThat(changeSets.get(1).generateCheckSum()).isEqualTo(CheckSum.parse("8:be5d8bb6fd7531a948444b922ddedad2"));
+        assertThat(changeSets.get(1).generateCheckSum()).isEqualTo(CheckSum.parse("9:8baa5825f5773e66b432fe3054447c9a"));
         assertThat(changeSets.get(1).getChanges())
                 .hasSize(2)
                 .hasOnlyElementsOfType(CreateContainerChange.class)
@@ -89,8 +89,8 @@ class CreateContainerChangeTest extends AbstractCosmosChangeTest {
                         Change::generateCheckSum, c -> c.generateStatements(database).length, c -> c.generateStatements(database)[0].getClass()
                 )
                 .containsExactly(
-                        tuple("maximal", null, 1546, "500", CheckSum.parse("8:40b47a837cf71fa82bf2da026678cf16"), 1, CreateContainerStatement.class),
-                        tuple("maximalAutoRU", null, 790, "{\"maxThroughput\": 8000}", CheckSum.parse("8:cf350b32c69fd4fed73991f3b3f10ffd"), 1, CreateContainerStatement.class)
+                        tuple("maximal", null, 1546, "500", CheckSum.parse("9:40b47a837cf71fa82bf2da026678cf16"), 1, CreateContainerStatement.class),
+                        tuple("maximalAutoRU", null, 790, "{\"maxThroughput\": 8000}", CheckSum.parse("9:cf350b32c69fd4fed73991f3b3f10ffd"), 1, CreateContainerStatement.class)
                 );
 
     }
