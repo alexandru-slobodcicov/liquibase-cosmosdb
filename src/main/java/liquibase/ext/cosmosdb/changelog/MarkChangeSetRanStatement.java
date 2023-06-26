@@ -1,5 +1,6 @@
 package liquibase.ext.cosmosdb.changelog;
 
+import liquibase.ChecksumVersion;
 import liquibase.change.Change;
 import liquibase.change.core.TagDatabaseChange;
 import liquibase.changelog.ChangeSet;
@@ -91,13 +92,14 @@ public class MarkChangeSetRanStatement extends AbstractCosmosContainerStatement
 //                ((UpdateStatement) runStatement).addNewColumnValue("TAG", tag);
 //            }
             } else {
+                ChecksumVersion checksumVersion =  changeSet.getStoredCheckSum() != null ? ChecksumVersion.enumFromChecksumVersion(changeSet.getStoredCheckSum().getVersion()) : ChecksumVersion.latest();
 
                 final CosmosRanChangeSet insertRanChangeSet = new CosmosRanChangeSet(
                         UUID.randomUUID().toString()
                         , changeSet.getFilePath()
                         , changeSet.getId()
                         , changeSet.getAuthor()
-                        , changeSet.generateCheckSum()
+                        , changeSet.generateCheckSum(checksumVersion)
                         , new Date()
                         , extractTag(changeSet)
                         , execType
