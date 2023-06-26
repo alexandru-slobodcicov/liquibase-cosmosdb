@@ -20,6 +20,7 @@ package liquibase.ext.cosmosdb.change;
  * #L%
  */
 
+import liquibase.ChecksumVersion;
 import liquibase.change.Change;
 import liquibase.change.CheckSum;
 import liquibase.changelog.ChangeSet;
@@ -62,7 +63,7 @@ class CreateContainerChangeTest extends AbstractCosmosChangeTest {
                 .isNotNull()
                 .hasSize(2);
 
-        assertThat(changeSets.get(0).generateCheckSum()).isEqualTo(CheckSum.parse("9:5fa50d36ca8df93adfa7c3420cbb7e1f"));
+        assertThat(changeSets.get(0).generateCheckSum(ChecksumVersion.latest())).isEqualTo(CheckSum.parse("9:5fa50d36ca8df93adfa7c3420cbb7e1f"));
         assertThat(changeSets.get(0).getChanges())
                 .hasSize(5)
                 .hasOnlyElementsOfType(CreateContainerChange.class)
@@ -79,7 +80,7 @@ class CreateContainerChangeTest extends AbstractCosmosChangeTest {
                         tuple("notSkipExisting", FALSE, null, null, CheckSum.parse("9:4b491837aa994bfab8801672021d47f6"), 1, CreateContainerStatement.class)
                 );
 
-        assertThat(changeSets.get(1).generateCheckSum()).isEqualTo(CheckSum.parse("9:8baa5825f5773e66b432fe3054447c9a"));
+        assertThat(changeSets.get(1).generateCheckSum(ChecksumVersion.latest())).isEqualTo(CheckSum.parse("9:8baa5825f5773e66b432fe3054447c9a"));
         assertThat(changeSets.get(1).getChanges())
                 .hasSize(2)
                 .hasOnlyElementsOfType(CreateContainerChange.class)
