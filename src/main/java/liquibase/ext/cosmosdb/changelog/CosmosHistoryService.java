@@ -20,32 +20,25 @@ package liquibase.ext.cosmosdb.changelog;
  * #L%
  */
 
+import com.azure.cosmos.implementation.Document;
+import com.azure.cosmos.models.SqlQuerySpec;
+import liquibase.ChecksumVersion;
 import liquibase.Scope;
 import liquibase.change.Change;
 import liquibase.change.core.TagDatabaseChange;
 import liquibase.changelog.ChangeSet;
-import liquibase.ext.cosmosdb.changelog.CosmosRanChangeSet;
 import liquibase.changelog.RanChangeSet;
 import liquibase.database.Database;
 import liquibase.exception.DatabaseException;
 import liquibase.ext.cosmosdb.database.CosmosLiquibaseDatabase;
-import liquibase.ext.cosmosdb.statement.CountContainersByNameStatement;
-import liquibase.ext.cosmosdb.statement.CountDocumentsInContainerStatement;
-import liquibase.ext.cosmosdb.statement.DeleteContainerStatement;
-import liquibase.ext.cosmosdb.statement.DeleteEachItemStatement;
-import liquibase.ext.cosmosdb.statement.UpdateEachItemStatement;
+import liquibase.ext.cosmosdb.statement.*;
 import liquibase.logging.Logger;
 import liquibase.nosql.changelog.AbstractNoSqlHistoryService;
 import liquibase.nosql.executor.NoSqlExecutor;
 import liquibase.util.StringUtil;
 
-import com.azure.cosmos.implementation.Document;
-import com.azure.cosmos.models.SqlQuerySpec;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static liquibase.plugin.Plugin.PRIORITY_SPECIALIZED;
 
 public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiquibaseDatabase> {
 
@@ -65,6 +58,16 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
     public boolean supports(final Database database) {
         getLogger().fine("Entering: " + getClass().getSimpleName() + " supports()");
         return CosmosLiquibaseDatabase.COSMOSDB_PRODUCT_NAME.equals(database.getDatabaseProductName());
+    }
+
+    @Override
+    public List<RanChangeSet> getRanChangeSets(boolean b) throws DatabaseException {
+        return getRanChangeSets();
+    }
+
+    @Override
+    public boolean isDatabaseChecksumsCompatible() {
+        return false;
     }
 
     @Override
@@ -193,8 +196,9 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
         getLogger().fine("Entering: " + getClass().getSimpleName() + " updateCheckSum(changeSet)");
         String query = "SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"";
         SqlQuerySpec querySpec = new SqlQuerySpec(query);
+        ChecksumVersion checksumVersion =  changeSet.getStoredCheckSum() != null ? ChecksumVersion.enumFromChecksumVersion(changeSet.getStoredCheckSum().getVersion()) : ChecksumVersion.latest();
         String docString = "{\n" +
-            "\"" + CosmosRanChangeSet.Fields.LAST_CHECK_SUM + "\"" + " : \"" + changeSet.generateCheckSum() + "\"\n" +
+            "\"" + CosmosRanChangeSet.Fields.LAST_CHECK_SUM + "\"" + " : \"" + changeSet.generateCheckSum(checksumVersion) + "\"\n" +
         "}";
         Document doc = new Document(docString);
         getExecutor().execute(
