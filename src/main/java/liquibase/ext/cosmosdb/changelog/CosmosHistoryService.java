@@ -196,9 +196,8 @@ public class CosmosHistoryService extends AbstractNoSqlHistoryService<CosmosLiqu
         getLogger().fine("Entering: " + getClass().getSimpleName() + " updateCheckSum(changeSet)");
         String query = "SELECT * FROM c where c.author=\"" + changeSet.getAuthor() + "\" and c.changeSetId=\""+ changeSet.getId()+ "\" and c.fileName=\""+ changeSet.getFilePath() + "\"";
         SqlQuerySpec querySpec = new SqlQuerySpec(query);
-        ChecksumVersion checksumVersion =  changeSet.getStoredCheckSum() != null ? ChecksumVersion.enumFromChecksumVersion(changeSet.getStoredCheckSum().getVersion()) : ChecksumVersion.latest();
         String docString = "{\n" +
-            "\"" + CosmosRanChangeSet.Fields.LAST_CHECK_SUM + "\"" + " : \"" + changeSet.generateCheckSum(checksumVersion) + "\"\n" +
+            "\"" + CosmosRanChangeSet.Fields.LAST_CHECK_SUM + "\"" + " : \"" + changeSet.generateCheckSum(ChecksumVersion.latest()) + "\"\n" +
         "}";
         Document doc = new Document(docString);
         getExecutor().execute(
