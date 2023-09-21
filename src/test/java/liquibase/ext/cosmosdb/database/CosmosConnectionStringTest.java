@@ -126,7 +126,7 @@ class CosmosConnectionStringTest {
         assertThat(cosmosConnectionString.getAccountKey()).hasValue("key");
         assertThat(cosmosConnectionString.getDatabaseName()).hasValue("db1");
         assertThat(cosmosConnectionString.getProperty("any")).isNotPresent();
-        assertThat(cosmosConnectionString.toUrl()).isEqualTo("cosmosdb://{\"accountEndpoint\":\"http://localhost:8080/\",\"databaseName\":\"db1\",\"accountKey\":\"key\"}");
+        assertThat(cosmosConnectionString.toUrl()).isEqualTo("cosmosdb://{\"accountEndpoint\":\"http://localhost:8080/\",\"databaseName\":\"db1\",\"accountKey\":\"*****\"}");
     }
 
     @Test
