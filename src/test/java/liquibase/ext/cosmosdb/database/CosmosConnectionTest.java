@@ -43,7 +43,7 @@ class CosmosConnectionTest {
 
         when(driverMock.connect(any())).thenReturn(clientMock);
         connection.open(TEST_COSMOS_JSON_CONNECTION_STRING_1, driverMock, propertiesMock);
-        assertThat(connection.getURL()).isEqualTo(TEST_COSMOS_JSON_CONNECTION_STRING_1);
+        assertThat(connection.getURL()).isEqualTo("cosmosdb://{\"accountEndpoint\":\"https://ech-0a9d975b:8080\",\"databaseName\":\"testdb1\",\"accountKey\":\"*****\"}");
     }
 
     @SneakyThrows
