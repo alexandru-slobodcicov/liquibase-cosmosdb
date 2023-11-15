@@ -2,6 +2,7 @@ package liquibase.ext.cosmosdb.database;
 
 import com.azure.core.util.UrlBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.util.StringUtil;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,11 @@ public class CosmosConnectionString {
 
     public String toUrl() {
         try {
-            return COSMOSDB_PREFIX + OBJECT_MAPPER.writer().writeValueAsString(properties);
+            Map<String, String> editedProperties = new HashMap<>(properties);
+            editedProperties.computeIfPresent(ACCOUNT_KEY_PROPERTY, (key, value) -> {
+                return "*****";
+            });
+            return COSMOSDB_PREFIX + OBJECT_MAPPER.writer().writeValueAsString(editedProperties);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Could not parse connection Json String: ", e);
         }
