@@ -32,7 +32,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: ${{ matrix.java }}
-        distribution: 'adopt'
+        distribution: 'temurin'
     - name: Test With Maven
       run: mvn clean verify --file pom.xml
 
