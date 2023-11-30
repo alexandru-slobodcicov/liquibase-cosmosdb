@@ -14,12 +14,12 @@ jobs:
     steps:
       - run: true
 
-  build:
+  build-test:
     needs: authorize
     uses: liquibase/build-logic/.github/workflows/os-extension-test.yml@v0.5.7
     secrets: inherit
 
   dependabot:
-    needs: build
+    needs: build-test
     uses: liquibase/build-logic/.github/workflows/dependabot-automerge.yml@v0.5.7
     secrets: inherit
