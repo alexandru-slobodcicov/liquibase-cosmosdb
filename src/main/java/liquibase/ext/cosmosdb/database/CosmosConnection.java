@@ -126,7 +126,7 @@ public class CosmosConnection extends AbstractNoSqlConnection {
 
         this.cosmosClient = ((CosmosClientDriver) driverObject).connect(cosmosConnectionString);
 
-        final String databaseName = cosmosConnectionString.getDatabaseName().get();
+        final String databaseName = cosmosConnectionString.getDatabaseName().get(); //NOSONAR
 
         try {
             this.cosmosClient.createDatabaseIfNotExists(databaseName);
